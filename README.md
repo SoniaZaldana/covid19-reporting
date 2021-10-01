@@ -1,2 +1,1 @@
-# covid19-reporting
-Parajuniper project: Covid-19 Reporting Tool 
+# Parajuniper Project: COVID-19 Reporting Tool 
