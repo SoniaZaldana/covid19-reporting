@@ -1,11 +1,11 @@
 # Parajuniper Project: COVID-19 Reporting Tool
-This is the repository for Parajuniper Project 4 which requires that we convert an XML-based 
-COVID-19 CDC reporting form to JSON, render it in a UI, and submit it as a FHIR message to an 
+This is the repository for Parajuniper Project 4 which requires that we convert an XML-based
+COVID-19 CDC reporting form to JSON, render it in a UI, and submit it as a FHIR message to an
 existing FHIR Server.
 
 ## Meeting Minutes and Development Plan
 
-You can find the meeting minutes for all of our meetings in the `meeting_minutes` folder. Additionally, you can find our development plan and tech stack discussion in `A1.md` in the parent directory. 
+You can find the meeting minutes for all of our meetings in the `meeting_minutes` folder. Additionally, you can find our development plan and tech stack discussion in `A1.md` in the parent directory.
 
 ## Installing the Development Environment
 If you are running Ubuntu, run the following command to install the development environment:
@@ -17,6 +17,7 @@ If you are running macOS, run the following command to install the development e
 ```
 ./scripts/mac_install_dev_env.sh
 ```
+Docker will open. Accept the terms and conditions and close the application.
 
 ## Building
 Run the following command to build the application:
