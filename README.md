@@ -32,3 +32,4 @@ Run the following command to test the application:
 ```
 ./scripts/test.sh
 ```
+Make sure the container from the build above is still running when you run this script.
