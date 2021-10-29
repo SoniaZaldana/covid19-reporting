@@ -135,11 +135,11 @@ function Section3() {
     </Row>
     <Row className="mb-3">
       <Form.Group as={Col} controlId="exposureContactSetting" md>
-        <i>If yes,</i> please list unique case identifiers of all probable or confirmed cases:
         <Form.Label><i>If yes,</i> please explain contact setting:</Form.Label>
         <Form.Control as="textarea" rows={2}/>
       </Form.Group>
     </Row>
+    <i>If yes,</i> please list unique case identifiers of all probable or confirmed cases:
     {['1', '2', '3', '4', '5'].map((number) => (
       <Row className="mb-3">
         <Col md={1}>

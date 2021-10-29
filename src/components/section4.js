@@ -23,15 +23,16 @@ function Section4() {
           name="outcomeDevelop"
           id="outcomeDevelopNo"
         />
-        <div className='flex-row'>
-          <Form.Check
-            type="radio"
-            label="Yes -- If yes, date of onset of symptoms/signs of illness:"
-            name="outcomeDevelop"
-            id="outcomeDevelopYes"
-          />
+        <Form.Check
+          type="radio"
+          label="Yes, asymptomatic case (as previously reported) developed symptoms and/or signs of illness"
+          name="outcomeDevelop"
+          id="outcomeDevelopYes"
+        />
+        <Form.Group controlId="outcomeDevelopYesDate" className='flex-row'>
+          <Form.Label><i>If yes,</i> date of onset of symptoms/signs of illness</Form.Label>
           <Form.Control type="date" className="yes-outcomedevelop"/>
-        </div>
+        </Form.Group>
         <Form.Check
           type="radio"
           label="Unknown"
@@ -188,6 +189,7 @@ function Section4() {
         <Form.Control type="date"/>
       </Form.Group>
     </Row>
+    <br/>
     <Row className="mb-3">
       <Form.Group as={Col} controlId="outcomeDateTest" md>
         <Form.Label><strong>If released from hospital /isolation, date of last laboratory test:</strong></Form.Label>
@@ -215,18 +217,24 @@ function Section4() {
         />
       </Form.Group>
     </Row>
+    <br/>
     <Row className="mb-3">
-      <Form.Group as={Col} controlId="outcomeTotalContacts" md>
+      <Form.Group as={Col} controlId="outcomeTotalContacts" md className="flex-row">
         <Form.Label><strong>Total number of contacts followed for this case:</strong></Form.Label>
-        <Form.Control type="number" min="0"/>
+        <div className="flex-row">
+          <Form.Control type="number" min="0"/>
+          <Form.Check
+            type="checkbox"
+            label="Unknown"
+            name="outcomeTotalContacts"
+            id="outcomeTotalContactsUnknown"
+          />
+        </div>
       </Form.Group>
-      <Form.Group as={Col} controlId="outcomeTotalContacts">
-        <Form.Check
-          type="checkbox"
-          label="Unknown"
-          name="outcomeTotalContacts"
-          id="outcomeTotalContactsUnknown"
-        />
+    </Row>
+    <Row className="mb-3">
+      <Form.Group as={Col}>
+
       </Form.Group>
     </Row>
 

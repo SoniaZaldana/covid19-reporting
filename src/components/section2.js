@@ -4,7 +4,7 @@ import Col from 'react-bootstrap/Col';
 
 function Section2() {
   return (<>
-    <h2 className='section-header'>Section 2: Clinical Information</h2>
+    <h2 className='section-header'>Section 2: Clinical Status</h2>
     <Row className="mb-3">
       <Form.Group as={Col} controlId="clinicalDateLabTest" md>
         <Form.Label>Date of first laboratory confirmation test:</Form.Label>

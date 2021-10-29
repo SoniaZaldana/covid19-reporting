@@ -45,6 +45,11 @@ h2.section-header {
   max-width: 200px;
 }
 
+.flex-row #outcomeTotalContacts {
+  margin: 0 8px;
+  max-width: 100px;
+}
+
 form .btn-primary {
   background-color: var(--blue);
   border-color: var(--blue);
