@@ -2,7 +2,7 @@ This document defines the mapping from XML to JSON so that the JSON can be poste
 
 - The "id" field of each question in this JSON form is the "name" field of the corresponding question in the XML form.
 - The "question" field of each question in this JSON form is the "title" field of the corresponding question in the XML form.
-- There are some exceptions to the above two statements which are commented in the JSON below.
+- There may be some exceptions to the above two statements which will be commented in the JSON below.
 - For questions where the user can check multiple options, the value of "response" should be a list.
 - All dates should be in the format "DD/MM/YYYY" to be consistent with the XML form.
 - The "followup_response" field only needs to be included if there are follow up responses in the form. For example: in "Section 2: Clinical Status"
@@ -49,18 +49,11 @@ for this question (JSON object for this question is object with "id" value of "Q
             {
                 "id": "Q_35972",
                 "question": "Age", 
-                "response": <int>,
-                "followup_response": [
-                    {                               // Note that this object has no corresponding place in the XML form, i.e. there is no question in the XML form with 
-                                                    // "name" having value "Q_35972_Units" and "title" having value "Age Units". The reason this object has to be created
-                                                    // is because in the PDF form there are three different places to insert the age depending on if the person is <1 month 
-                                                    // old, <1 year old or >=1 year old. It doesn't make sense for this JSON to differentiate the three places as done in the 
-                                                    // XML form. So this object will represent the units of the age (days, months or years).
-                        "id": "Q_35972_Units",
-                        "question": "Age Units",
-                        "response": <string>        // value for "response" should be one of the following: {"days", "months", "years"}
-                    }
-                ]
+                "response": {
+                    "days": <int>,
+                    "months": <int>,
+                    "years": <int>
+                }
             },
             {
                 "id": "Q_35978",
