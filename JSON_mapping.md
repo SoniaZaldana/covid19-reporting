@@ -183,7 +183,7 @@ for this question (JSON object for this question is object with "id" value of "Q
                 "response": <string>,
                 "followup_response": [ {
                     "id": "S_36914", 
-                    "question": "Please specify the places the patient travelled to and date of departure from the places", 
+                    "question": "Prior Travel History (for multiple destinations, repeat this section up to 10 times)", 
                     "response": [
                         {
                             "country": <string>, 
@@ -216,7 +216,7 @@ for this question (JSON object for this question is object with "id" value of "Q
                     }, 
                     {
                         "id": "S_37037", 
-                        "question": "Prior confirmed contact information", 
+                        "question": "Prior Confirmed Contact Information (for multiple contacts, repeat this section up to 100 times)", 
                         "response": [ 
                             {
                                 "contact_id": <string>, 
@@ -256,7 +256,7 @@ for this question (JSON object for this question is object with "id" value of "Q
             }, 
             {
                 "id": "Q_36957", 
-                "question": "Admission to Hospital", 
+                "question": "Admission to Hospital (may have been previously reported)", 
                 "response": <string>, 
                 "followup_response": [
                     {
@@ -278,28 +278,38 @@ for this question (JSON object for this question is object with "id" value of "Q
                         "id": "Q_37389", 
                         "question": "Did the Case Receive Extracorporeal Membrane Oxygenation?", 
                         "response": <string>
-                    }, 
-                    {
-                        "id": "Q_37025", 
-                        "question": "Health Outcome"", 
-                        "response": <string>
-                    }, 
-                    {
-                        "id": "Q_37412", 
-                        "question": "Date of Release or Death (DD / MM / YYYY)", 
-                        "response": <string>
-                    },
-                    {
-                        "id": "Q_37420", 
-                        "question": "Specify Date of Last Laboratory Test (DD / MM / YYYY)", 
-                        "response": <string>
-                    }, 
-                    {
-                        "id": "Q_39438", 
-                        "question": "Results of Last Test", 
-                        "response": <string>
                     }
                 ]
+            },
+            {
+                "id": "Q_37025", 
+                "question": "Health Outcome"", 
+                "response": <string>, 
+                "followup_response": []
+            }, 
+            {
+                "id": "Q_37412", 
+                "question": "Date of Release or Death (DD / MM / YYYY)", 
+                "response": <string>, 
+                "followup_response": []
+            },
+            {
+                "id": "Q_37420", 
+                "question": "Specify Date of Last Laboratory Test (DD / MM / YYYY)", 
+                "response": <string>, 
+                "followup_response": []
+            }, 
+            {
+                "id": "Q_39438", 
+                "question": "Results of Last Test", 
+                "response": <string>, 
+                "followup_response": []
+            }, 
+            {
+                "id": "Q_39564", 
+                "question": "Total Number of Contacts Followed for this Case", 
+                "response": <string>, 
+                "followup_response": []
             }
         ]
     }
