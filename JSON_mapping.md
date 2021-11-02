@@ -153,29 +153,163 @@ for this question (JSON object for this question is object with "id" value of "Q
         ]
     },
     "exposure_risk": {
-        "description": "",
+        "description": "Exposure risk in the 14 days prior to symptom onset (prior to testing if asymptomatic)",
         "questions_to_responses": [
             {
-                "id": ""
-                "question": "", 
-                "response": "",
+                "id": "Q_36919",
+                "question": "Is Case a Health Care Worker (any job in a health care setting)?", 
+                "response": <string>,
                 "followup_response": [
                     {
-                        "id": ""
-                        "question": ""
-                        "response": ""
+                        "id": "Q_37294"
+                        "question": "Country"
+                        "response": <string>
+                    }, 
+                    {
+                        "id": "Q_36891"
+                        "question": "City"
+                        "response": <string>
+                    }, 
+                    {
+                        "id": "Q_36928"
+                        "question": "Name of Facility"
+                        "response": <string>
+                    }
+                ]
+            }, 
+            {
+                "id": "Q_36945",
+                "question": "Has the Case Travelled in the 14 Days Prior to Symptom Onset?", 
+                "response": <string>,
+                "followup_response": [ {
+                    "id": "S_36914", 
+                    "question": "Prior Travel History (for multiple destinations, repeat this section up to 10 times)", 
+                    "response": [
+                        {
+                            "country": <string>, 
+                            "city": <string>, 
+                            "departure_date": <string>
+                        }
+                    ]
+                    }
+                ]
+            }, 
+            {
+                "id": "Q_36916",
+                "question": "Has Case Visited Any Health Care Facility in the 14 Days Prior to Symptom Onset?", 
+                "response": <string>
+            }, 
+            {
+                "id": "Q_36997",
+                "question": "Has Case Had Contact With a Confirmed Case in the 14 Days Prior to Symptom Onset?", 
+                "response": <string>, 
+                "followup_response": [
+                    {
+                        "id": "Q_36917"
+                        "question": "Please List Unique Identifiers of All Probable or Confirmed Cases", 
+                        "response": <string>
+                    }, 
+                    {
+                        "id": "Q_37375"
+                        "question": "Please Explain Contact Setting", 
+                        "response": <string>
+                    }, 
+                    {
+                        "id": "S_37037", 
+                        "question": "Prior Confirmed Contact Information (for multiple contacts, repeat this section up to 100 times)", 
+                        "response": [ 
+                            {
+                                "contact_id": <string>, 
+                                "first_date_contact": <string>, 
+                                "last_date_contact": <string>
+                            }
+                        ]
+                    }, 
+                    {
+                        "id": "Q_36931", 
+                        "question": "Most Likely Country of Exposure", 
+                        "response": <string>
                     }
                 ]
             }
         ]
     },
     "outcome": {
-        "description": "",
+        "description": "Outcome: complete and re-sent the full form as soon as outcome of disease is known or after 30 days after initial report",
         "questions_to_responses": [
             {
-                "id": ""
-                "question": "", 
-                "response": ""
+                "id": "Q_37114",
+                "question": "Date of Resubmission of This Report (DD / MM / YYYY)", 
+                "response": <string>
+            }, 
+            {
+                "id": "Q_36934", 
+                "question": "If Case was Asymptomatic at Time of Specimen Collection Resulting in First Laboratory Confirmation, Did the Case Develop Any Symptoms or Signs at Any Time Prior to Discharge or Death?", 
+                "response": <string>, 
+                "followup_response": [
+                    {
+                        "id": "Q_37128", 
+                        "question": "Specify Date of Onset of Symptoms / Signs of Illness (DD / MM / YYYY)", 
+                        response: <string>
+                    }
+                ]
+            }, 
+            {
+                "id": "Q_36957", 
+                "question": "Admission to Hospital (may have been previously reported)", 
+                "response": <string>, 
+                "followup_response": [
+                    {
+                        "id": "Q_37403", 
+                        "question": "Specify Date of First Admission (DD / MM / YYYY)", 
+                        "response": <string>
+                    }, 
+                    {
+                        "id": "Q_37229", 
+                        "question": "Did the Case Receive Care in an Intensive Care Unit (ICU)?", 
+                        "response": <string>
+                    }, 
+                    {
+                        "id": "Q_37372", 
+                        "question": "Did the Case Receive Ventilation?", 
+                        "response": <string>
+                    }, 
+                    {
+                        "id": "Q_37389", 
+                        "question": "Did the Case Receive Extracorporeal Membrane Oxygenation?", 
+                        "response": <string>
+                    }
+                ]
+            },
+            {
+                "id": "Q_37025", 
+                "question": "Health Outcome"", 
+                "response": <string>, 
+                "followup_response": []
+            }, 
+            {
+                "id": "Q_37412", 
+                "question": "Date of Release or Death (DD / MM / YYYY)", 
+                "response": <string>, 
+                "followup_response": []
+            },
+            {
+                "id": "Q_37420", 
+                "question": "Specify Date of Last Laboratory Test (DD / MM / YYYY)", 
+                "response": <string>, 
+                "followup_response": []
+            }, 
+            {
+                "id": "Q_39438", 
+                "question": "Results of Last Test", 
+                "response": <string>, 
+                "followup_response": []
+            }, 
+            {
+                "id": "Q_39564", 
+                "question": "Total Number of Contacts Followed for this Case", 
+                "response": <string>, 
+                "followup_response": []
             }
         ]
     }
