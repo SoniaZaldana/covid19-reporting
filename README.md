@@ -7,6 +7,8 @@ existing FHIR Server.
 
 You can find the meeting minutes for all of our meetings in the `meeting_minutes` folder. Additionally, you can find our development plan and tech stack discussion in `A1.md` in the parent directory.
 
+You can also find a description of our features with subtasks in `A2.md` in the parent directory. 
+
 ## Installing the Development Environment
 If you are running Ubuntu, run the following command to install the development environment:
 ```
