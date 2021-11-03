@@ -2,8 +2,8 @@ import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 
-function Section2() {
-  return (<>
+export const Section2 = ({handleChange, formFields, formErrors}) => (
+  <>
     <h2 className='section-header'>Section 2: Clinical Status</h2>
     <Row className="mb-3">
       <Form.Group as={Col} controlId="clinicalDateLabTest" md>
@@ -270,7 +270,5 @@ function Section2() {
       </Form.Group>
     </Row>
 
-    </>)
-}
-
-export default Section2;
+    </>
+)
