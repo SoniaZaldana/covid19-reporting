@@ -3,7 +3,7 @@ import { Component } from 'react';
 import {Section0} from './section0.js';
 import {Section1} from './section1.js';
 import {Section2} from './section2.js';
-import Section3 from './section3.js';
+import {Section3} from './section3.js';
 import Section4 from './section4.js';
 import Button from 'react-bootstrap/Button';
 
@@ -40,7 +40,11 @@ class ReportForm extends Component {
                 clinicalAdmissionVentilation: '',
                 clinicalAdmissionOxygenation: '',
                 clinicalAdmissionIsolation: '',
-                clinicalAdmissionIsolationDate: ''
+                clinicalAdmissionIsolationDate: '',
+                exposureWorker: '',
+                exposureWorkerCountry: '',
+                exposureWorkerCity: '',
+                exposureWorkerFacility: ''
             },
             formErrors: {
                 reportingDate: '',
@@ -62,7 +66,10 @@ class ReportForm extends Component {
                 clinicalUnderlyingConditionsWriteIn: '',
                 clinicalAdmission: '',
                 clinicalAdmissionDate: '',
-                clinicalAdmissionIsolationDate: ''
+                clinicalAdmissionIsolationDate: '',
+                exposureWorkerCountry: '',
+                exposureWorkerCity: '',
+                exposureWorkerFacility: ''
             }
         }
     }
@@ -74,8 +81,6 @@ class ReportForm extends Component {
     }
 
     handleChange = e => {
-        
-        console.log(e.target);
 
         const {id, value} = e.target;
         let formErrors = this.state.formErrors;
@@ -104,6 +109,7 @@ class ReportForm extends Component {
                 formFields.whyTestedWriteIn = value;
             }
         }
+
         // Section1: Patient Information
         else if (id === 'uniqueCaseId') {
             formFields.uniqueCaseId = value;
@@ -131,6 +137,7 @@ class ReportForm extends Component {
             formFields.patientResidencyCountry = value;
             formErrors.patientResidencyCountry = isFieldValid(id, value).message;
         }
+
         // Section2: Clinical Status
         else if (id === 'clinicalDateLabTest') {
             let date = convertDate(value);
@@ -209,7 +216,28 @@ class ReportForm extends Component {
             }
         }
 
-        this.setState({formErrors, formFields}, () => console.log(this.state));
+        // Section3 : Exposure risk in the 14 days prior to symptom onset
+        else if (id === 'exposureWorkerNo' || id === 'exposureWorkerYes' || id === 'exposureWorkerUnknown') {
+            formFields.exposureWorker = id.toLowerCase().replace('exposureworker','');
+
+            // Clear error if value changes
+            if (formFields.exposureWorker !== 'yes') {
+                formErrors.exposureWorkerCountry = '';
+                formErrors.exposureWorkerCity = '';
+                formErrors.exposureWorkerFacility = '';   
+            }
+        } else if (id === 'exposureWorkerCountry') {
+            formFields.exposureWorkerCountry = value;
+            formErrors.exposureWorkerCountry = isFieldValid(id, value).message;
+        } else if (id === 'exposureWorkerCity') {
+            formFields.exposureWorkerCity = value;
+            formErrors.exposureWorkerCity = isFieldValid(id, value).message;
+
+        } else if (id === 'exposureWorkerFacility') {
+            formFields.exposureWorkerFacility = value;
+            formErrors.exposureWorkerFacility = isFieldValid(id, value).message;
+        }
+            this.setState({formErrors, formFields}, () => console.log(this.state));
 
     }
     
@@ -220,7 +248,7 @@ class ReportForm extends Component {
                 <Section0 handleChange={this.handleChange} formFields={this.state.formFields} formErrors={this.state.formErrors} />
                 <Section1 handleChange={this.handleChange} formFields={this.state.formFields} formErrors={this.state.formErrors} />
                 <Section2 handleChange={this.handleChange} formFields={this.state.formFields} formErrors={this.state.formErrors} />
-                <Section3 />
+                <Section3 handleChange={this.handleChange} formFields={this.state.formFields} formErrors={this.state.formErrors} />
                 <Section4 />
                 <Button variant="primary" type="submit">
                     Submit
@@ -270,6 +298,7 @@ const isFieldValid = (name, value) => {
         case 'reportingCountry':
         case 'patientDiagnosisCountry':
         case 'patientResidencyCountry':
+        case 'exposureWorkerCountry':
             if (!/^[a-zA-Z]+$/.test(value)) {
                 result.valid = false;
                 result.message = 'Country must only contain letters';
@@ -318,6 +347,30 @@ const isFieldValid = (name, value) => {
             if (value === '') {
                 result.valid = false;
                 result.message = 'Please enter a Province';
+            }
+            break;
+        // Section 3
+        case 'exposureWorkerCity':
+            if (!/^[a-zA-Z]+$/.test(value)) {
+                result.valid = false;
+                result.message = 'City must only contain letters';
+            } else if (value.length < 2) {
+                result.valid = false;
+                result.message = 'City must have at least 3 characters';
+            }
+            if (value === '') {
+                result.valid = false;
+                result.message = 'Please enter a City';
+            }
+            break;
+        case 'exposureWorkerFacility':
+            if (value.length < 2) {
+                result.valid = false;
+                result.message = 'Facility must have at least 3 characters';
+            }
+            if (value === '') {
+                result.valid = false;
+                result.message = 'Please enter a Facility';
             }
             break;
         default:

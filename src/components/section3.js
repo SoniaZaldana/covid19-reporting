@@ -2,49 +2,61 @@ import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 
-function Section3() {
-  return (<>
+export const Section3 = ({handleChange, formFields, formErrors}) => (
+  <>
     <h2 className='section-header'>Section 3:  Exposure risk in the 14 days prior to symptom onset (prior to testing if asymptomatic)</h2>
     <Row className="mb-3">
-      <Form.Group as={Col} controlId="exposureWorker" md>
+      <Form.Group as={Col} controlId="exposureWorker" onChange={handleChange} md>
         <Form.Label>Is case a Health Care Worker (any job in a health care setting): </Form.Label>
         <Form.Check
           type="radio"
           label="No"
           name="exposureWorker"
           id="exposureWorkerNo"
+          required
         />
         <Form.Check
           type="radio"
           label="Yes"
           name="exposureWorker"
           id="exposureWorkerYes"
+          required
         />
         <Form.Check
           type="radio"
           label="Unknown"
           name="exposureWorker"
           id="exposureWorkerUnknown"
+          required
         />
       </Form.Group>
     </Row>
     <Row className="mb-3">
       <i>If yes</i>
-      <Form.Group as={Col} controlId="exposureWorkerCountry" md>
+      <Form.Group as={Col} controlId="exposureWorkerCountry" onChange={handleChange} md>
         <Form.Label>Country</Form.Label>
-        <Form.Control type="text" />
+        <Form.Control type="text" disabled={formFields.exposureWorker !== 'yes'} />
+        {formErrors.exposureWorkerCountry.length > 0 && (
+          <Form.Text className="text-danger">{formErrors.exposureWorkerCountry}</Form.Text>
+        )}
       </Form.Group>
-      <Form.Group as={Col} controlId="exposureWorkerCity" md>
+      <Form.Group as={Col} controlId="exposureWorkerCity" onChange={handleChange} md>
         <Form.Label>City</Form.Label>
-        <Form.Control type="text" />
+        <Form.Control type="text" disabled={formFields.exposureWorker !== 'yes'} />
+        {formErrors.exposureWorkerCity.length > 0 && (
+          <Form.Text className="text-danger">{formErrors.exposureWorkerCity}</Form.Text>
+        )}
       </Form.Group>
-      <Form.Group as={Col} controlId="exposureWorkerFacility" md>
+      <Form.Group as={Col} controlId="exposureWorkerFacility" onChange={handleChange} md>
         <Form.Label>Name of facility</Form.Label>
-        <Form.Control type="text" />
+        <Form.Control type="text" disabled={formFields.exposureWorker !== 'yes'} />
+        {formErrors.exposureWorkerFacility.length > 0 && (
+          <Form.Text className="text-danger">{formErrors.exposureWorkerFacility}</Form.Text>
+        )}
       </Form.Group>
     </Row>
     <Row className="mb-3">
-      <Form.Group as={Col} controlId="exposureTravel" md>
+      <Form.Group as={Col} controlId="exposureTravel" onChange={handleChange} md>
         <Form.Label>Has the case <strong>travelled</strong> in the 14 days prior to symptom onset?</Form.Label>
         <Form.Check
           type="radio"
@@ -88,7 +100,7 @@ function Section3() {
       ))
     }
     <Row className="mb-3">
-      <Form.Group as={Col} controlId="exposureVisitedFacility" md>
+      <Form.Group as={Col} controlId="exposureVisitedFacility" onChange={handleChange} md>
         <Form.Label>Has case <strong>visited any health care facility</strong> in the 14 days prior to symptom onset?</Form.Label>
         <Form.Check
           type="radio"
@@ -111,7 +123,7 @@ function Section3() {
       </Form.Group>
     </Row>
     <Row className="mb-3">
-      <Form.Group as={Col} controlId="exposureContact" md>
+      <Form.Group as={Col} controlId="exposureContact" onChange={handleChange} md>
         <Form.Label>Has case <strong>had contact with a confirmed case</strong> in the 14 days prior to symptom onset?</Form.Label>
         <Form.Check
           type="radio"
@@ -134,7 +146,7 @@ function Section3() {
       </Form.Group>
     </Row>
     <Row className="mb-3">
-      <Form.Group as={Col} controlId="exposureContactSetting" md>
+      <Form.Group as={Col} controlId="exposureContactSetting" onChange={handleChange} md>
         <Form.Label><i>If yes,</i> please explain contact setting:</Form.Label>
         <Form.Control as="textarea" rows={2}/>
       </Form.Group>
@@ -161,13 +173,11 @@ function Section3() {
       ))
     }
     <Row className="mb-3">
-      <Form.Group as={Col} controlId="exposureContactCountry" md>
+      <Form.Group as={Col} controlId="exposureContactCountry" onChange={handleChange} md>
         <Form.Label>Most likely country of exposure</Form.Label>
         <Form.Control type="text"/>
       </Form.Group>
     </Row>
 
-    </>)
-}
-
-export default Section3;
+  </>
+)
