@@ -25,12 +25,28 @@ class ReportForm extends Component {
                 patientSex: '',
                 patientDiagnosisCountry: '',
                 patientDiagnosisProvince: '',
-                patientResidencyCountry: ''
+                patientResidencyCountry: '',
+                clinicalDateLabTest: '',
+                clinicalSymptoms: '',
+                clinicalSymptomsDate: '',
+                clinicalUnderlyingConditions: '',
+                clinicalUnderlyingConditionsCheckAll: [],
+                // Add ConditionsWriteIn to CheckAll array onSubmit
+                clinicalUnderlyingConditionsWriteIn: '',
+                // ^^^
+                clinicalAdmission: '',
+                clinicalAdmissionDate: '',
+                clinicalAdmissionICU: '',
+                clinicalAdmissionVentilation: '',
+                clinicalAdmissionOxygenation: '',
+                clinicalAdmissionIsolation: '',
+                clinicalAdmissionIsolationDate: ''
             },
             formErrors: {
                 reportingDate: '',
                 reportingCountry: '',
                 whyTested: '',
+                whyTestedWriteIn: '',
                 uniqueCaseId: '',
                 patientAgeYears: '',
                 patientAgeMonths: '',
@@ -38,7 +54,15 @@ class ReportForm extends Component {
                 patientSex:'',
                 patientDiagnosisCountry: '',
                 patientDiagnosisProvince: '',
-                patientResidencyCountry: ''
+                patientResidencyCountry: '',
+                clinicalDateLabTest: '',
+                clinicalSymptoms: '',
+                clinicalSymptomsDate: '',
+                clinicalUnderlyingConditions: '',
+                clinicalUnderlyingConditionsWriteIn: '',
+                clinicalAdmission: '',
+                clinicalAdmissionDate: '',
+                clinicalAdmissionIsolationDate: ''
             }
         }
     }
@@ -108,8 +132,81 @@ class ReportForm extends Component {
             formErrors.patientResidencyCountry = isFieldValid(id, value).message;
         }
         // Section2: Clinical Status
-        else if (1) {
+        else if (id === 'clinicalDateLabTest') {
+            let date = convertDate(value);
+            formFields.clinicalDateLabTest = date;
 
+            formErrors.clinicalDateLabTest = isFieldValid('date', value).message;
+        } else if (id === 'clinicalSymptomsNo' || id === 'clinicalSymptomsYes' || id === 'clinicalSymptomsUnknown') {
+            formFields.clinicalSymptoms = id.toLowerCase().replace('clinicalsymptoms','');
+
+            if (formFields.clinicalSymptoms !== 'yes') {
+                formErrors.clinicalSymptomsDate = '';
+                formFields.clinicalSymptomsDate = '';
+            }
+        } else if (id === 'clinicalSymptomsDate') {
+            let date = convertDate(value);
+            formFields.clinicalSymptomsDate = date;
+
+            formErrors.clinicalSymptomsDate = isFieldValid('date', value).message;
+        } else if (id.includes('clinicalUnderlyingConditions')) {
+            // Get value of sympton type
+            let conditionValue = id.replace('clinicalUnderlyingConditions','');
+
+            // Get if any underlying conditions (radio button)
+            if (conditionValue === 'No' || conditionValue === 'Yes' || conditionValue === 'Unknown') {
+                formFields.clinicalUnderlyingConditions = conditionValue.toLowerCase();
+            }
+            
+            // Checklist values
+            else {
+                if (id !== 'clinicalUnderlyingConditionsWriteIn') {
+                    // Add/remove checked fields to clinicalUnderlyingConditionsCheckAll array
+                    if (e.target.checked) {
+                        formFields.clinicalUnderlyingConditionsCheckAll.push(e.target.nextSibling.innerText);
+                    } else {
+                        formFields.clinicalUnderlyingConditionsCheckAll = formFields.clinicalUnderlyingConditionsCheckAll.filter(el => el !== e.target.nextSibling.innerText);
+                    }
+                } else {
+                    formFields.clinicalUnderlyingConditionsWriteIn = value;
+                }
+            }
+        } else if (id.includes('clinicalAdmission')) {
+            // Get value of admission type
+            let admissionValue = id.replace('clinicalAdmission','');
+
+            // Get if admitted to hospital (radio button)
+            if (admissionValue === 'No' || admissionValue === 'Yes' || admissionValue === 'Unknown') {
+                formFields.clinicalAdmission = admissionValue.toLowerCase();
+            }
+            
+            // Hospital Admission Information
+            if (formFields.clinicalAdmission === 'yes') {
+
+                if (admissionValue === 'Date') {
+                    let date = convertDate(value);
+                    formFields.clinicalAdmissionDate = date;
+
+                    formErrors.clinicalAdmissionDate = isFieldValid('date', value).message;
+                } else if (admissionValue.includes('ICU')) {
+                    formFields.clinicalAdmissionICU = admissionValue.replace('ICU', '').toLowerCase();
+                } else if (admissionValue.includes('Ventilation')) {
+                    formFields.clinicalAdmissionVentilation = admissionValue.replace('Ventilation', '').toLowerCase();
+                } else if (admissionValue.includes('Oxygenation')) {
+                    formFields.clinicalAdmissionOxygenation = admissionValue.replace('Oxygenation', '').toLowerCase();
+                }
+
+            }
+
+            // Not part of clinical admission followup reponse
+            if (admissionValue === 'IsolationNo' || admissionValue === 'IsolationYes' || admissionValue === 'IsolationUnknown') {    
+                formFields.clinicalAdmissionIsolation = admissionValue.replace('Isolation', '').toLowerCase();
+            } else if (admissionValue === 'IsolationDate') {
+                let date = convertDate(value);
+                formFields.clinicalAdmissionIsolationDate = date;
+
+                formErrors.clinicalAdmissionIsolationDate = isFieldValid('date', value).message;
+            }
         }
 
         this.setState({formErrors, formFields}, () => console.log(this.state));
