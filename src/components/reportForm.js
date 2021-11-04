@@ -44,7 +44,20 @@ class ReportForm extends Component {
                 exposureWorker: '',
                 exposureWorkerCountry: '',
                 exposureWorkerCity: '',
-                exposureWorkerFacility: ''
+                exposureWorkerFacility: '',
+                exposureTravel: '',
+                // Max size 3, one element per entry
+                exposureTravelCountry: ['','',''],
+                exposureTravelCity: ['','',''],
+                exposureTravelDeparture: ['','',''],
+                // ^^^
+                exposureVisitedFacility: '',
+                exposureContact: '',
+                exposureContactSetting: '',
+                exposureContactId: ['','','','',''],
+                exposureContactFirstDate: ['','','','',''],
+                exposureContactLastDate: ['','','','',''],
+                exposureContactCountry: ''
             },
             formErrors: {
                 reportingDate: '',
@@ -69,7 +82,15 @@ class ReportForm extends Component {
                 clinicalAdmissionIsolationDate: '',
                 exposureWorkerCountry: '',
                 exposureWorkerCity: '',
-                exposureWorkerFacility: ''
+                exposureWorkerFacility: '',
+                exposureTravelCountry: ['','',''],
+                exposureTravelCity: ['','',''],
+                exposureTravelDeparture: ['','',''],
+                exposureContactSetting: '',
+                exposureContactId: ['','','','',''],
+                exposureContactFirstDate: ['','','','',''],
+                exposureContactLastDate: ['','','','',''],
+                exposureContactCountry: ''
             }
         }
     }
@@ -220,12 +241,6 @@ class ReportForm extends Component {
         else if (id === 'exposureWorkerNo' || id === 'exposureWorkerYes' || id === 'exposureWorkerUnknown') {
             formFields.exposureWorker = id.toLowerCase().replace('exposureworker','');
 
-            // Clear error if value changes
-            if (formFields.exposureWorker !== 'yes') {
-                formErrors.exposureWorkerCountry = '';
-                formErrors.exposureWorkerCity = '';
-                formErrors.exposureWorkerFacility = '';   
-            }
         } else if (id === 'exposureWorkerCountry') {
             formFields.exposureWorkerCountry = value;
             formErrors.exposureWorkerCountry = isFieldValid(id, value).message;
@@ -236,8 +251,62 @@ class ReportForm extends Component {
         } else if (id === 'exposureWorkerFacility') {
             formFields.exposureWorkerFacility = value;
             formErrors.exposureWorkerFacility = isFieldValid(id, value).message;
+
+
+        } else if (id === 'exposureTravelNo' || id === 'exposureTravelYes' || id === 'exposureTravelUnknown') {
+            formFields.exposureTravel = id.replace('exposureTravel','').toLowerCase();
+            
+        } else if (id.includes('exposureTravelCountry')) {
+            let index = parseInt( id.replace('exposureTravelCountry','') ) - 1;
+            formFields.exposureTravelCountry[index] = value;
+            formErrors.exposureTravelCountry[index] = isFieldValid('exposureTravelCountry', value).message;
+
+        } else if (id.includes('exposureTravelCity')) {
+            let index = parseInt( id.replace('exposureTravelCity','') ) - 1;
+            formFields.exposureTravelCity[index] = value;
+            formErrors.exposureTravelCity[index] = isFieldValid('exposureTravelCity', value).message;
+
+        } else if (id.includes('exposureTravelDeparture')) {
+            let index = parseInt( id.replace('exposureTravelDeparture','') ) - 1;
+            formFields.exposureTravelDeparture[index] = value;
+            formErrors.exposureTravelDeparture[index] = isFieldValid('date', value).message;
+
+        } else if (id === 'exposureVisitedFacilityNo' || id === 'exposureVisitedFacilityYes' || 
+            id === 'exposureVisitedFacilityUnknown') {
+
+                formFields.exposureVisitedFacility = id.replace('exposureVisitedFacility','').toLowerCase();
+
+        } else if (id === 'exposureContactNo' || id === 'exposureContactYes' || id === 'exposureContactUnknown') {
+            formFields.exposureContact = id.replace('exposureContact','').toLowerCase();
+
+        } else if (id === 'exposureContactSetting') {
+            formFields.exposureContactSetting = value;
+            formErrors.exposureContactSetting = isFieldValid('exposureContactSetting', value).message;
+
+        } else if (id.includes('exposureContactId')) {
+            let index = parseInt( id.replace('exposureContactId','') ) - 1;
+            formFields.exposureContactId[index] = value;
+
+        } else if (id.includes('exposureContactFirstDate')) {
+            let index = parseInt( id.replace('exposureContactFirstDate','') ) - 1;
+            formFields.exposureContactFirstDate[index] = value;
+            formErrors.exposureContactFirstDate[index] = isFieldValid('date', value).message;
+
+        } else if (id.includes('exposureContactLastDate')) {
+            let index = parseInt( id.replace('exposureContactLastDate','') ) - 1;
+            formFields.exposureContactLastDate[index] = value;
+            formErrors.exposureContactLastDate[index] = isFieldValid('date', value).message;
+
+        } else if (id === 'exposureContactCountry') {
+            formFields.exposureContactCountry = value;
+            formErrors.exposureContactCountry = isFieldValid(id, value).message;
         }
-            this.setState({formErrors, formFields}, () => console.log(this.state));
+
+
+
+
+
+        this.setState({formErrors, formFields}, () => console.log(this.state));
 
     }
     
@@ -299,6 +368,8 @@ const isFieldValid = (name, value) => {
         case 'patientDiagnosisCountry':
         case 'patientResidencyCountry':
         case 'exposureWorkerCountry':
+        case 'exposureTravelCountry':
+        case 'exposureContactCountry':
             if (!/^[a-zA-Z]+$/.test(value)) {
                 result.valid = false;
                 result.message = 'Country must only contain letters';
@@ -351,6 +422,7 @@ const isFieldValid = (name, value) => {
             break;
         // Section 3
         case 'exposureWorkerCity':
+        case 'exposureTravelCity':
             if (!/^[a-zA-Z]+$/.test(value)) {
                 result.valid = false;
                 result.message = 'City must only contain letters';
@@ -371,6 +443,12 @@ const isFieldValid = (name, value) => {
             if (value === '') {
                 result.valid = false;
                 result.message = 'Please enter a Facility';
+            }
+            break;
+        case 'exposureContactSetting':
+            if (value === '') {
+                result.valid = false;
+                result.message = 'Please type the contact setting';
             }
             break;
         default:
