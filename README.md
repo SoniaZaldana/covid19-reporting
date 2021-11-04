@@ -34,4 +34,5 @@ Run the following command to test the application:
 ```
 ./scripts/test.sh
 ```
+Note that currently the tests will fail.
 Make sure the container from the build above is still running when you run this script.
