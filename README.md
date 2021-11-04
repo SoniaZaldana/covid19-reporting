@@ -34,5 +34,5 @@ Run the following command to test the application:
 ```
 ./scripts/test.sh
 ```
-Note that currently the tests will fail.
+Note that the tests will fail and this is expected because there are no tests written yet. As discussed with the client, there is no testing component for this milestone.
 Make sure the container from the build above is still running when you run this script.
