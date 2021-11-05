@@ -4,7 +4,7 @@ import {Section0} from './section0.js';
 import {Section1} from './section1.js';
 import {Section2} from './section2.js';
 import {Section3} from './section3.js';
-import Section4 from './section4.js';
+import {Section4} from './section4.js';
 import Button from 'react-bootstrap/Button';
 
 class ReportForm extends Component {
@@ -57,7 +57,21 @@ class ReportForm extends Component {
                 exposureContactId: ['','','','',''],
                 exposureContactFirstDate: ['','','','',''],
                 exposureContactLastDate: ['','','','',''],
-                exposureContactCountry: ''
+                exposureContactCountry: '',
+                outcomeDateResubmission: '',
+                outcomeDevelop: '',
+                outcomeDevelopYesDate: '',
+                outcomeAdmission: '',
+                outcomeDateAdmission: '',
+                outcomeAdmissionICU: '',
+                outcomeAdmissionVentilation: '',
+                outcomeAdmissionOxygenation : '',
+                outcomeHealth: '',
+                outcomeHealthOtherWriteIn: '',
+                outcomeDateRelease: '',
+                outcomeDateTest: '',
+                outcomeTestResult: '',
+                outcomeTotalContacts: ''
             },
             formErrors: {
                 reportingDate: '',
@@ -90,7 +104,14 @@ class ReportForm extends Component {
                 exposureContactId: ['','','','',''],
                 exposureContactFirstDate: ['','','','',''],
                 exposureContactLastDate: ['','','','',''],
-                exposureContactCountry: ''
+                exposureContactCountry: '',
+                outcomeDateResubmission: '',
+                outcomeDevelopYesDate: '',
+                outcomeDateAdmission: '',
+                outcomeHealthOtherWriteIn: '',
+                outcomeDateRelease: '',
+                outcomeDateTest: '',
+                outcomeTotalContacts: ''
             }
         }
     }
@@ -268,7 +289,9 @@ class ReportForm extends Component {
 
         } else if (id.includes('exposureTravelDeparture')) {
             let index = parseInt( id.replace('exposureTravelDeparture','') ) - 1;
-            formFields.exposureTravelDeparture[index] = value;
+            let date = convertDate(value);
+
+            formFields.exposureTravelDeparture[index] = date;
             formErrors.exposureTravelDeparture[index] = isFieldValid('date', value).message;
 
         } else if (id === 'exposureVisitedFacilityNo' || id === 'exposureVisitedFacilityYes' || 
@@ -289,17 +312,89 @@ class ReportForm extends Component {
 
         } else if (id.includes('exposureContactFirstDate')) {
             let index = parseInt( id.replace('exposureContactFirstDate','') ) - 1;
-            formFields.exposureContactFirstDate[index] = value;
+            let date = convertDate(value);
+            formFields.exposureContactFirstDate[index] = date;
             formErrors.exposureContactFirstDate[index] = isFieldValid('date', value).message;
 
         } else if (id.includes('exposureContactLastDate')) {
             let index = parseInt( id.replace('exposureContactLastDate','') ) - 1;
-            formFields.exposureContactLastDate[index] = value;
+            let date = convertDate(value);
+            formFields.exposureContactLastDate[index] = date;
             formErrors.exposureContactLastDate[index] = isFieldValid('date', value).message;
 
         } else if (id === 'exposureContactCountry') {
             formFields.exposureContactCountry = value;
             formErrors.exposureContactCountry = isFieldValid(id, value).message;
+        }
+        // Section4 : Outcome : complete and re-sent the full form as...
+        else if (id === 'outcomeDateResubmission') {
+            let date = convertDate(value);
+            formFields.outcomeDateResubmission = date;
+            formErrors.outcomeDateResubmission = isFieldValid('date', value).message;
+
+        } else if (id === 'outcomeDevelopNo' || id === 'outcomeDevelopYes' || id === 'outcomeDevelopUnknown') {
+            formFields.outcomeDevelop = id.replace('outcomeDevelop','').toLowerCase();
+
+        } else if (id === 'outcomeDevelopYesDate') {
+            let date = convertDate(value);
+            formFields.outcomeDevelopYesDate = date;
+            formErrors.outcomeDevelopYesDate = isFieldValid('date', value).message;
+
+        } else if (id === 'outcomeAdmissionNo' || id === 'outcomeAdmissionYes' || id === 'outcomeAdmissionUnknown') {
+            formFields.outcomeAdmission = id.replace('outcomeAdmission','').toLowerCase();
+
+        } else if (id === 'outcomeDateAdmission') {
+            let date = convertDate(value);
+            formFields.outcomeDateAdmission = date;
+            formErrors.outcomeDateAdmission = isFieldValid('date', value).message;
+            
+        } else if (id === 'outcomeAdmissionICUNo' || id === 'outcomeAdmissionICUYes' || id === 'outcomeAdmissionICUUnknown') {
+            formFields.outcomeAdmissionICU = id.replace('outcomeAdmissionICU','').toLowerCase();
+
+        } else if (id === 'outcomeAdmissionVentilationNo' || id === 'outcomeAdmissionVentilationYes' || 
+            id === 'outcomeAdmissionVentilationUnknown') {
+                formFields.outcomeAdmissionVentilation = id.replace('outcomeAdmissionVentilation','').toLowerCase();
+
+        } else if (id === 'outcomeAdmissionOxygenationNo' || id === 'outcomeAdmissionOxygenationYes' || 
+            id === 'outcomeAdmissionOxygenationUnknown') {
+                formFields.outcomeAdmissionOxygenation = id.replace('outcomeAdmissionOxygenation','').toLowerCase();
+
+        } else if (id === 'outcomeHealthRecovered' || id === 'outcomeHealthNot' || id === 'outcomeHealthDeath'
+            || id === 'outcomeHealthUnknown' || id === 'outcomeHealthOther') {
+
+                formFields.outcomeHealth = id.replace('outcomeHealth','').toLowerCase();
+        } else if (id === 'outcomeHealthOtherWriteIn') {
+
+            formFields.outcomeHealthOtherWriteIn = value;
+            formErrors.outcomeHealthOtherWriteIn = isFieldValid('outcomeHealthOtherWriteIn', value).message;
+        } else if (id === 'outcomeDateRelease') {
+            let date = convertDate(value);
+            formFields.outcomeDateRelease = date;
+            formErrors.outcomeDateRelease = isFieldValid('date', value).message;
+            
+        } else if (id === 'outcomeDateTest') {
+            let date = convertDate(value);
+            formFields.outcomeDateTest = date;
+            formErrors.outcomeDateTest = isFieldValid('date', value).message;
+        } else if (id === 'outcomeTestResultPositive' || id === 'outcomeTestResultNegative' || id === 'outcomeTestResultUnknown') {
+
+            formFields.outcomeTestResult = id.replace('outcomeTestResult','').toLowerCase();
+
+        } else if (id === 'outcomeTotalContacts') {
+            formFields.outcomeTotalContacts = value;
+            formErrors.outcomeTotalContacts = isFieldValid('outcomeTotalContacts', value).message;
+            
+        } else if (id === 'outcomeTotalContactsUnknown') {
+            if (e.target.checked) {
+                formFields.outcomeTotalContacts = 'unknown';
+            } else {
+                formFields.outcomeTotalContacts = document.getElementById('outcomeTotalContacts').value;
+
+                // Check if data already entered
+                if (formFields.outcomeTotalContacts === '') {
+                    formErrors.outcomeTotalContacts = isFieldValid('outcomeTotalContacts', '').message;
+                }
+            }
         }
 
 
@@ -318,7 +413,7 @@ class ReportForm extends Component {
                 <Section1 handleChange={this.handleChange} formFields={this.state.formFields} formErrors={this.state.formErrors} />
                 <Section2 handleChange={this.handleChange} formFields={this.state.formFields} formErrors={this.state.formErrors} />
                 <Section3 handleChange={this.handleChange} formFields={this.state.formFields} formErrors={this.state.formErrors} />
-                <Section4 />
+                <Section4 handleChange={this.handleChange} formFields={this.state.formFields} formErrors={this.state.formErrors} />
                 <Button variant="primary" type="submit">
                     Submit
                 </Button>
@@ -449,6 +544,25 @@ const isFieldValid = (name, value) => {
             if (value === '') {
                 result.valid = false;
                 result.message = 'Please type the contact setting';
+            }
+            break;
+        // Section 4
+        case 'outcomeHealthOtherWriteIn':
+            if (value === '') {
+                result.valid = false;
+                result.message = 'Please explain the health outcome';
+            } else if (value.length < 4) {
+                result.valid = false;
+                result.message = 'Please be more descriptive';
+            }
+            break;
+        case 'outcomeTotalContacts':
+            if (value === '') {
+                result.valid = false;
+                result.message = 'Please enter total number of contacts';
+            } else if (!/^[0-9]+$/.test(value)) {
+                result.valid = false;
+                result.message = 'Number of contacts should consist of only numbers/digits';
             }
             break;
         default:
