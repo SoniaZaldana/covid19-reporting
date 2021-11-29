@@ -34,6 +34,75 @@ const Validate = {
         }
 
         return sectionStatus;
+    },
+    /*
+        Checks section 1 for invalid data.
+
+        When submission flag is 1, validation will update the entire section with corresponding error messages
+    */
+    section1: (formFields, formErrors = undefined, submission = 0) => {
+        var sectionStatus = {
+            invalid: 0,
+            uniqueCaseId: '',
+            patientAgeYears: '',
+            patientAgeMonths: '',
+            patientAgeDays: '',
+            patientAge: '',
+            patientSex:'',
+            patientDiagnosisCountry: '',
+            patientDiagnosisProvince: '',
+            patientResidencyCountry: ''
+        }
+
+        // Check Unique Case Identifier (used in country)
+        sectionStatus.uniqueCaseId = ValidationFunctions.isUniqueCaseIdInvalid(formFields.uniqueCaseId).message;
+        sectionStatus.invalid = sectionStatus.uniqueCaseId ? 1 : 0;
+
+        const AgeResult = ValidationFunctions.isAgeValid(formFields.patientAgeYears, formFields.patientAgeMonths, formFields.patientAgeDays);
+        if (AgeResult.status) {
+            sectionStatus.invalid = 1;
+
+            if (AgeResult.status === 1) {
+                sectionStatus.patientAgeYears = AgeResult.message;
+            } else if (AgeResult.status === 2) {
+                sectionStatus.patientAgeMonths = AgeResult.message;
+            } else if (AgeResult.status === 3) {
+                sectionStatus.patientAgeDays = AgeResult.message;
+            } else {
+                sectionStatus.patientAge = AgeResult.message;
+            } 
+        }
+
+        if (!formFields.patientSex) {
+            sectionStatus.invalid = 1;
+            sectionStatus.patientSex = "Please select sex at birth"
+        }
+
+        // Check if country are valid
+        sectionStatus.patientDiagnosisCountry = ValidationFunctions.isCountryInvalid(formFields.patientDiagnosisCountry).message;
+        sectionStatus.invalid = sectionStatus.patientDiagnosisCountry ? 1 : 0;
+
+        sectionStatus.patientResidencyCountry = ValidationFunctions.isCountryInvalid(formFields.patientResidencyCountry).message;
+        sectionStatus.invalid = sectionStatus.patientResidencyCountry ? 1 : 0;
+
+        // Check if province is valid
+        sectionStatus.patientDiagnosisProvince = ValidationFunctions.isProvinceInvalid(formFields.patientDiagnosisProvince).message;
+        sectionStatus.invalid = sectionStatus.patientDiagnosisProvince ? 1 : 0;
+        
+        if (submission && formErrors) {
+            formErrors.uniqueCaseId = sectionStatus.uniqueCaseId;
+            formErrors.patientAgeYears = sectionStatus.patientAgeYears;
+            formErrors.patientAgeMonths = sectionStatus.patientAgeMonths;
+            formErrors.patientAgeDays = sectionStatus.patientAgeDays;
+            formErrors.patientAge = sectionStatus.patientAge;
+            formErrors.patientSex = sectionStatus.patientSex;
+            formErrors.patientDiagnosisCountry = sectionStatus.patientDiagnosisCountry;
+            formErrors.patientDiagnosisProvince = sectionStatus.patientDiagnosisProvince;
+            formErrors.patientResidencyCountry = sectionStatus.patientResidencyCountry;
+        }
+
+
+        return sectionStatus;
     }
 
 }
@@ -43,56 +112,47 @@ const ValidationFunctions = {
         Checks if age is valid
         Returns object {status, message}
         
-        Status is set to 0 when age is valid,
-        1 when age includes month or days (years only)
-        2 when years is over 150
-        3 when age includes years or days (months only)
-        4 when months is over 12
-        5 when age includes years or months (days only)
-        6 when days is over 31
+        Status is set to 
+        0 when age is valid,
+        1 when years is over 150
+        2 when months is over 12
+        3 when days is over 31
+        4 No information entered
+        5 Too much data
 
         Message is empty string when age is valid, or set to corresponding status response
     */
     isAgeValid: (years, months, days) => {
         let result = {status: 0, message: ''};
-
-        // Check if days is the only value for age
-        if ( !years && !months && days ) {
-
+        console.log(years)
+        console.log(months)
+        console.log(days)
+        // Check days
+        if ( !years && !months && days) {
             if (days > 31) {
-                result.status = 6;
+                result.status = 3;
                 result.message = 'Days cannot be greater than 31';
             }
-            
-        } else {
-            result.status = 5;
-            result.message = "If patient is younger than 1 month old, please do not add year or month entries";
         }
-
-        // Check if months is the only value for age
-        if ( !years && months && !days ) {
-
+        // Check months 
+        else if (!years && months && !days) {
             if (months > 12) {
-                result.status = 4;
+                result.status = 2;
                 result.message = 'Months cannot be greater than 12';
             }
-            
-        } else {
-            result.status = 3;
-            result.message = "If patient is younger than 1 year but older than 1 month, please do not add year or day entries";
         }
-
-        // Check if years is the only value for age
-        if ( years && !months && !days ) {
-
+        // Check years
+        else if (years && !months && !days) {
             if (years > 150) {
-                result.status = 2;
+                result.status = 1;
                 result.message = 'Years cannot be greater than 150';
             }
-            
+        } else if (!years && !months && !days) {
+            result.status = 4;
+            result.message = "Please enter age information";
         } else {
-            result.status = 1;
-            result.message = "If patient is 1 year or older, please do not add month or day entries";
+            result.status = 5;
+            result.message = "Only enter the neccesary information (year only, or month only, or day only)";
         }
 
         return result;

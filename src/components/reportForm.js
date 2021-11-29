@@ -83,6 +83,7 @@ class ReportForm extends Component {
                 patientAgeYears: '',
                 patientAgeMonths: '',
                 patientAgeDays: '',
+                patientAge: '',
                 patientSex:'',
                 patientDiagnosisCountry: '',
                 patientDiagnosisProvince: '',
@@ -163,41 +164,60 @@ class ReportForm extends Component {
 
             this.setState({formErrors, formFields}, () => console.log(this.state));
         },
+        section1: e => {
+            // Section1: Patient Information
+
+            const {id, value} = e.target;
+            let formErrors = this.state.formErrors;
+            let formFields = this.state.formFields;
+
+            if (id === 'uniqueCaseId') {
+                formFields.uniqueCaseId = value;
+                formErrors.uniqueCaseId = Validate.section1(formFields).uniqueCaseId;
+
+            } else if (id === 'patientAgeYears') {
+                formFields.patientAgeYears = value && value !=="0" ? parseInt(value) : 0;
+                const AgeResult = Validate.section1(formFields);
+                formErrors.patientAgeYears = AgeResult.patientAgeYears;
+                formErrors.patientAge = AgeResult.patientAge;
+                
+            } else if (id === 'patientAgeMonths') {
+                formFields.patientAgeMonths = value && value !=="0" ? parseInt(value) : 0;
+                const AgeResult = Validate.section1(formFields);
+                formErrors.patientAgeMonths = AgeResult.patientAgeMonths;
+                formErrors.patientAge = AgeResult.patientAge;
+    
+            } else if (id === 'patientAgeDays') {
+                formFields.patientAgeDays = value && value !=="0" ? parseInt(value) : 0;
+                const AgeResult = Validate.section1(formFields);
+                formErrors.patientAgeDays = AgeResult.patientAgeDays;
+                formErrors.patientAge = AgeResult.patientAge;
+
+            } else if (id === 'sexMale' || id === 'sexFemale') {
+                formFields.patientSex = id.toLowerCase().replace('sex','');
+            } else if (id === 'patientDiagnosisCountry') {
+                formFields.patientDiagnosisCountry = value;
+                formErrors.patientDiagnosisCountry = isFieldValid(id, value).message;
+            } else if (id === 'patientDiagnosisProvince') {
+                formFields.patientDiagnosisProvince = value;
+                formErrors.patientDiagnosisProvince = isFieldValid(id, value).message;
+            } else if (id === 'patientResidencyCountry') {
+                formFields.patientResidencyCountry = value;
+                formErrors.patientResidencyCountry = isFieldValid(id, value).message;
+            }
+
+            this.setState({formErrors, formFields}, () => console.log(this.state));
+        },
         temp: e => {
         const {id, value} = e.target;
         let formErrors = this.state.formErrors;
         let formFields = this.state.formFields;
 
-        // Section1: Patient Information
-        if (id === 'uniqueCaseId') {
-            formFields.uniqueCaseId = value;
-            formErrors.uniqueCaseId = isFieldValid(id, value).message;
-        } else if (id === 'patientAgeYears') {
-            formFields.patientAgeYears = value && value !=="0" ? parseInt(value) : 0;
-            formErrors.patientAgeYears = isFieldValid(id, value).message;
-
-        } else if (id === 'patientAgeMonths') {
-            formFields.patientAgeMonths = value && value !=="0" ? parseInt(value) : 0;
-            formErrors.patientAgeMonths = isFieldValid(id, value).message;
-
-        } else if (id === 'patientAgeDays') {
-            formFields.patientAgeDays = value && value !=="0" ? parseInt(value) : 0;
-            formErrors.patientAgeDays = isFieldValid(id, value).message;
-        } else if (id === 'sexMale' || id === 'sexFemale') {
-            formFields.patientSex = id.toLowerCase().replace('sex','');
-        } else if (id === 'patientDiagnosisCountry') {
-            formFields.patientDiagnosisCountry = value;
-            formErrors.patientDiagnosisCountry = isFieldValid(id, value).message;
-        } else if (id === 'patientDiagnosisProvince') {
-            formFields.patientDiagnosisProvince = value;
-            formErrors.patientDiagnosisProvince = isFieldValid(id, value).message;
-        } else if (id === 'patientResidencyCountry') {
-            formFields.patientResidencyCountry = value;
-            formErrors.patientResidencyCountry = isFieldValid(id, value).message;
-        }
+        
+        
 
         // Section2: Clinical Status
-        else if (id === 'clinicalDateLabTest') {
+        if (id === 'clinicalDateLabTest') {
             let date = convertDate(value);
             formFields.clinicalDateLabTest = date;
 
@@ -427,7 +447,8 @@ class ReportForm extends Component {
         return (
             <form onSubmit={this.handleSubmit}>
                 <Section0 handleChange={this.handleChange.section0} formFields={this.state.formFields} formErrors={this.state.formErrors} />
-                {/* <Section1 handleChange={this.handleChange.temp} formFields={this.state.formFields.section1} formErrors={this.state.formErrors.section1} />
+                <Section1 handleChange={this.handleChange.section1} formFields={this.state.formFields} formErrors={this.state.formErrors} />
+                {/* 
                 <Section2 handleChange={this.handleChange.temp} formFields={this.state.formFields} formErrors={this.state.formErrors} />
                 <Section3 handleChange={this.handleChange.temp} formFields={this.state.formFields} formErrors={this.state.formErrors} />
                 <Section4 handleChange={this.handleChange.temp} formFields={this.state.formFields} formErrors={this.state.formErrors} /> */}

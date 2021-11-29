@@ -36,6 +36,9 @@ export const Section1 = ({handleChange, formFields, formErrors}) => (
             <Form.Text className="text-danger">{formErrors.patientAgeDays}</Form.Text>
           )}
         </Form.Group>
+        {formErrors.patientAge.length > 0 && (
+            <Form.Text className="text-danger">{formErrors.patientAge}</Form.Text>
+          )}
       </Row>
       <Row className="mb-3">
         <Form.Group as={Col} controlId="patientSex" onChange={handleChange}>
