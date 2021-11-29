@@ -66,6 +66,9 @@ export const Section0 = ({handleChange, formFields, formErrors}) => (
         <Form.Group as={Col} controlId="whyTestedWriteIn" onChange={handleChange} >
           <Form.Label>If none of the above please explain</Form.Label>
           <Form.Control type="text" disabled={formFields.whyTested.length !== 0} />
+          {formErrors.whyTestedWriteIn.length > 0 && (
+            <Form.Text className="text-warning">{formErrors.whyTestedWriteIn}</Form.Text>
+          )}
         </Form.Group>
       </Row>
     </>

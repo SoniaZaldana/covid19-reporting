@@ -6,6 +6,7 @@ import {Section2} from './section2.js';
 import {Section3} from './section3.js';
 import {Section4} from './section4.js';
 import Button from 'react-bootstrap/Button';
+import { Validate, ValidationFunctions } from '../Validation.js';
 
 class ReportForm extends Component {
 
@@ -120,40 +121,55 @@ class ReportForm extends Component {
         e.preventDefault();
 
         // Check that values are valid before submitting
+
+        let formErrors = this.state.formErrors;
+        let formFields = this.state.formFields;
+
+        Validate.section0(formFields, formErrors, 1);
     }
 
-    handleChange = e => {
+    handleChange = {
 
+        section0: e => {
+            const {id, value} = e.target;
+            let formErrors = this.state.formErrors;
+            let formFields = this.state.formFields;
+
+            if (id === 'reportingDate') {
+                let date = ValidationFunctions.convertDate(value);
+                formFields.reportingDate = date;
+                formErrors.reportingDate = Validate.section0(formFields).reportingDate;
+
+            } else if (id === 'reportingCountry') {
+                formFields.reportingCountry = value;
+                formErrors.reportingCountry = Validate.section0(formFields).reportingCountry;
+
+            } else if ( id.includes('whyTested') ) {
+    
+                if (id !== 'whyTestedWriteIn') {
+                    // Add/remove checked fields to whyTested array
+                    if (e.target.checked) {
+                        formFields.whyTested.push(e.target.nextSibling.innerText);
+                    } else {
+                        formFields.whyTested = formFields.whyTested.filter(el => el !== e.target.nextSibling.innerText);
+                    }
+                } else {
+                    formFields.whyTestedWriteIn = value;
+                }
+
+                formErrors.whyTestedWriteIn =  Validate.section0(formFields).whyTestedWriteIn;
+
+            }
+
+            this.setState({formErrors, formFields}, () => console.log(this.state));
+        },
+        temp: e => {
         const {id, value} = e.target;
         let formErrors = this.state.formErrors;
         let formFields = this.state.formFields;
 
-        // Section0
-        if (id === 'reportingDate') {
-            let date = convertDate(value);
-            formFields.reportingDate = date;
-
-            formErrors.reportingDate = isFieldValid('date', value).message;
-        } else if (id === 'reportingCountry') {
-            formFields.reportingCountry = value;
-            formErrors.reportingCountry = isFieldValid(id, value).message;
-        } else if ( id.includes('whyTested') ) {
-
-            if (id !== 'whyTestedWriteIn') {
-                // Add/remove checked fields to whyTested array
-                if (e.target.checked) {
-                    formFields.whyTested.push(e.target.nextSibling.innerText);
-                    formFields.whyTestedWriteIn = '';
-                } else {
-                    formFields.whyTested = formFields.whyTested.filter(el => el !== e.target.nextSibling.innerText);
-                }
-            } else {
-                formFields.whyTestedWriteIn = value;
-            }
-        }
-
         // Section1: Patient Information
-        else if (id === 'uniqueCaseId') {
+        if (id === 'uniqueCaseId') {
             formFields.uniqueCaseId = value;
             formErrors.uniqueCaseId = isFieldValid(id, value).message;
         } else if (id === 'patientAgeYears') {
@@ -402,18 +418,19 @@ class ReportForm extends Component {
 
 
         this.setState({formErrors, formFields}, () => console.log(this.state));
+    }
 
     }
     
     render() {
-
+        console.log(this.state)
         return (
             <form onSubmit={this.handleSubmit}>
-                <Section0 handleChange={this.handleChange} formFields={this.state.formFields} formErrors={this.state.formErrors} />
-                <Section1 handleChange={this.handleChange} formFields={this.state.formFields} formErrors={this.state.formErrors} />
-                <Section2 handleChange={this.handleChange} formFields={this.state.formFields} formErrors={this.state.formErrors} />
-                <Section3 handleChange={this.handleChange} formFields={this.state.formFields} formErrors={this.state.formErrors} />
-                <Section4 handleChange={this.handleChange} formFields={this.state.formFields} formErrors={this.state.formErrors} />
+                <Section0 handleChange={this.handleChange.section0} formFields={this.state.formFields} formErrors={this.state.formErrors} />
+                {/* <Section1 handleChange={this.handleChange.temp} formFields={this.state.formFields.section1} formErrors={this.state.formErrors.section1} />
+                <Section2 handleChange={this.handleChange.temp} formFields={this.state.formFields} formErrors={this.state.formErrors} />
+                <Section3 handleChange={this.handleChange.temp} formFields={this.state.formFields} formErrors={this.state.formErrors} />
+                <Section4 handleChange={this.handleChange.temp} formFields={this.state.formFields} formErrors={this.state.formErrors} /> */}
                 <Button variant="primary" type="submit">
                     Submit
                 </Button>
@@ -470,7 +487,7 @@ const isFieldValid = (name, value) => {
                 result.message = 'Country must only contain letters';
             } else if (value.length < 4) {
                 result.valid = false;
-                result.message = 'Country must have at least 4 characters';
+                result.message = 'Country must have at least 4 letters';
             }
             if (value === '') {
                 result.valid = false;
