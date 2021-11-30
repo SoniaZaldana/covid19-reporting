@@ -13,7 +13,7 @@ const Validate = {
             whyTestedWriteIn: ''
         }
 
-        // Check is date is valid
+        // Check if date is valid
         const reportingDate = ValidationFunctions.unconvertDate(formFields.reportingDate);
         sectionStatus.reportingDate = ValidationFunctions.isDateInvalid(reportingDate).message;
         sectionStatus.invalid = sectionStatus.reportingDate ? 1 : 0;
@@ -123,7 +123,7 @@ const Validate = {
             clinicalAdmissionIsolationDate: ''
         }
 
-        // Check is date is valid
+        // Check if date is valid
         const clinicalDateLabTest = ValidationFunctions.unconvertDate(formFields.clinicalDateLabTest);
         sectionStatus.clinicalDateLabTest = ValidationFunctions.isDateInvalid(clinicalDateLabTest).message;
         sectionStatus.invalid = sectionStatus.clinicalDateLabTest ? 1 : 0;
@@ -134,7 +134,7 @@ const Validate = {
             sectionStatus.clinicalSymptoms = "Please select if there were any symptoms or signs at time of testing."
         }
 
-        // Check is date is valid
+        // Check if date is valid
         const clinicalSymptomsDate = ValidationFunctions.unconvertDate(formFields.clinicalSymptomsDate);
         sectionStatus.clinicalSymptomsDate = ValidationFunctions.isDateInvalid(clinicalSymptomsDate).message;
         sectionStatus.invalid = sectionStatus.clinicalSymptomsDate ? 1 : 0;
@@ -162,7 +162,7 @@ const Validate = {
             } 
         }
 
-        // Check is date is valid
+        // Check if date is valid
         const clinicalAdmissionDate = ValidationFunctions.unconvertDate(formFields.clinicalAdmissionDate);
         sectionStatus.clinicalAdmissionDate = ValidationFunctions.isDateInvalid(clinicalAdmissionDate).message;
         sectionStatus.invalid = sectionStatus.clinicalAdmissionDate ? 1 : 0;
@@ -248,7 +248,7 @@ const Validate = {
 
         if (formFields.exposureContact === 'yes') {
             sectionStatus.invalid = 1;
-            sectionStatus.exposureContactSetting = ValidationFunctions.isContactConditionInvalid(formFields.exposureContactSetting).message;
+            sectionStatus.exposureContactSetting = ValidationFunctions.isContactSettingInvalid(formFields.exposureContactSetting).message;
 
             for (var j = 0; j < 5; j++) {
 
@@ -286,11 +286,99 @@ const Validate = {
         }
 
         return sectionStatus;
+    },
+    section4: (formFields, formErrors = undefined, submission = 0) => {
+        var sectionStatus = {
+            invalid: 0,
+            outcomeDateResubmission: '',
+            outcomeDevelopYesDate: '',
+            outcomeDateAdmission: '',
+            outcomeHealthOtherWriteIn: '',
+            outcomeDateRelease: '',
+            outcomeDateTest: '',
+            outcomeTotalContacts: ''
+        }
+
+        // Check if dates are valid
+        const outcomeDateResubmission = ValidationFunctions.unconvertDate(formFields.outcomeDateResubmission);
+        sectionStatus.outcomeDateResubmission = ValidationFunctions.isDateInvalid(outcomeDateResubmission).message;
+        sectionStatus.invalid = sectionStatus.outcomeDateResubmission ? 1 : 0;
+
+        const outcomeDevelopYesDate = ValidationFunctions.unconvertDate(formFields.outcomeDevelopYesDate);
+        sectionStatus.outcomeDevelopYesDate = ValidationFunctions.isDateInvalid(outcomeDevelopYesDate).message;
+        sectionStatus.invalid = sectionStatus.outcomeDevelopYesDate ? 1 : 0;
+
+        const outcomeDateAdmission = ValidationFunctions.unconvertDate(formFields.outcomeDateAdmission);
+        sectionStatus.outcomeDateAdmission = ValidationFunctions.isDateInvalid(outcomeDateAdmission).message;
+        sectionStatus.invalid = sectionStatus.outcomeDateAdmission ? 1 : 0;
+
+        const outcomeDateRelease = ValidationFunctions.unconvertDate(formFields.outcomeDateRelease);
+        sectionStatus.outcomeDateRelease = ValidationFunctions.isDateInvalid(outcomeDateRelease).message;
+        sectionStatus.invalid = sectionStatus.outcomeDateRelease ? 1 : 0;
+
+        const outcomeDateTest = ValidationFunctions.unconvertDate(formFields.outcomeDateTest);
+        sectionStatus.outcomeDateTest = ValidationFunctions.isDateInvalid(outcomeDateTest).message;
+        sectionStatus.invalid = sectionStatus.outcomeDateTest ? 1 : 0;
+
+        // Check if outcome description is valid
+        sectionStatus.outcomeHealthOtherWriteIn = ValidationFunctions.isHealthOutcomeStatemantInvalid(formFields.outcomeHealthOtherWriteIn).message;
+        sectionStatus.invalid = sectionStatus.outcomeHealthOtherWriteIn ? 1 : 0;
+
+        // Check total number of contacts for this case
+        sectionStatus.outcomeTotalContacts = ValidationFunctions.isTotalNumberContactInvalid(formFields.outcomeTotalContacts).message;
+        sectionStatus.invalid = sectionStatus.outcomeTotalContacts ? 1 : 0;
+
+        return sectionStatus;
     }
 
 }
 const ValidationFunctions = {
 
+    /*
+        Checks if total number of contacts is valid
+        Returns object {status, message}
+
+        Status is set to
+        0 when number is valid,
+        1 when number is empty,
+        2 when number is not a number
+    */
+    isTotalNumberContactInvalid: (number) => {
+        let result = {status: 0, message: ''};
+
+        if (number === '') {
+            result.status = 1;
+            result.message = 'Please enter total number of contacts';
+        } else if (!/^[0-9]+$/.test(number)) {
+            result.status = 2;
+            result.message = 'Number of contacts should consist of only numbers/digits';
+        }
+
+        return result;
+    },
+    /*
+        Check if health outcome description is valid
+        Returns object {status, message}
+
+        Status is set to
+        0 when outcome is valid,
+        1 when outcome is empty,
+        2 when outcome is not descriptive
+    */
+   isHealthOutcomeStatemantInvalid: (healthOutcome) => {
+    let result = {status: 0, message: ''};
+
+    if (healthOutcome === '') {
+        result.status = 1;
+        result.message = 'Please explain the health outcome';
+    } else if (healthOutcome.length < 4) {
+        result.status = 2;
+        result.message = 'Please be more descriptive';
+    }
+
+    return result;
+
+   },
     /*
         Check if contact ID is valid
         Returns object {status, message}
@@ -317,7 +405,7 @@ const ValidationFunctions = {
         0 when contact statement is valid,
         1 when contact statement is empty or too short
     */
-   isContactConditionInvalid: (conditionStatement) => {
+   isContactSettingInvalid: (conditionStatement) => {
     let result = {status: 0, message: ''};
 
     if (conditionStatement === '' || conditionStatement.length < 5) {

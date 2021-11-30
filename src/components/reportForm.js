@@ -199,13 +199,13 @@ class ReportForm extends Component {
                 formFields.patientSex = id.toLowerCase().replace('sex','');
             } else if (id === 'patientDiagnosisCountry') {
                 formFields.patientDiagnosisCountry = value;
-                formErrors.patientDiagnosisCountry = isFieldValid(id, value).message;
+                formErrors.patientDiagnosisCountry = Validate.section1(formFields).patientDiagnosisCountry;
             } else if (id === 'patientDiagnosisProvince') {
                 formFields.patientDiagnosisProvince = value;
-                formErrors.patientDiagnosisProvince = isFieldValid(id, value).message;
+                formErrors.patientDiagnosisProvince = Validate.section1(formFields).patientDiagnosisProvince;
             } else if (id === 'patientResidencyCountry') {
                 formFields.patientResidencyCountry = value;
-                formErrors.patientResidencyCountry = isFieldValid(id, value).message;
+                formErrors.patientResidencyCountry = Validate.section1(formFields).patientResidencyCountry;
             }
 
             this.setState({formErrors, formFields}, () => console.log(this.state));
@@ -408,92 +408,84 @@ class ReportForm extends Component {
             this.setState({formErrors, formFields}, () => console.log(this.state));
         
         },
-        temp: e => {
+        section4: e => {
+            // Section4 : Outcome : complete and re-sent the full form as...
             const {id, value} = e.target;
             let formErrors = this.state.formErrors;
             let formFields = this.state.formFields;
-
-
         
-        
-        // Section4 : Outcome : complete and re-sent the full form as...
-        if (id === 'outcomeDateResubmission') {
-            let date = convertDate(value);
-            formFields.outcomeDateResubmission = date;
-            formErrors.outcomeDateResubmission = isFieldValid('date', value).message;
+            if (id === 'outcomeDateResubmission') {
+                let date = ValidationFunctions.convertDate(value);
+                formFields.outcomeDateResubmission = date;
+                formErrors.outcomeDateResubmission = Validate.section4(formFields).outcomeDateResubmission;
 
-        } else if (id === 'outcomeDevelopNo' || id === 'outcomeDevelopYes' || id === 'outcomeDevelopUnknown') {
-            formFields.outcomeDevelop = id.replace('outcomeDevelop','').toLowerCase();
+            } else if (id === 'outcomeDevelopNo' || id === 'outcomeDevelopYes' || id === 'outcomeDevelopUnknown') {
+                formFields.outcomeDevelop = id.replace('outcomeDevelop','').toLowerCase();
 
-        } else if (id === 'outcomeDevelopYesDate') {
-            let date = convertDate(value);
-            formFields.outcomeDevelopYesDate = date;
-            formErrors.outcomeDevelopYesDate = isFieldValid('date', value).message;
+            } else if (id === 'outcomeDevelopYesDate') {
+                let date = ValidationFunctions.convertDate(value);
+                formFields.outcomeDevelopYesDate = date;
+                formErrors.outcomeDevelopYesDate = Validate.section4(formFields).outcomeDevelopYesDate;
 
-        } else if (id === 'outcomeAdmissionNo' || id === 'outcomeAdmissionYes' || id === 'outcomeAdmissionUnknown') {
-            formFields.outcomeAdmission = id.replace('outcomeAdmission','').toLowerCase();
+            } else if (id === 'outcomeAdmissionNo' || id === 'outcomeAdmissionYes' || id === 'outcomeAdmissionUnknown') {
+                formFields.outcomeAdmission = id.replace('outcomeAdmission','').toLowerCase();
 
-        } else if (id === 'outcomeDateAdmission') {
-            let date = convertDate(value);
-            formFields.outcomeDateAdmission = date;
-            formErrors.outcomeDateAdmission = isFieldValid('date', value).message;
-            
-        } else if (id === 'outcomeAdmissionICUNo' || id === 'outcomeAdmissionICUYes' || id === 'outcomeAdmissionICUUnknown') {
-            formFields.outcomeAdmissionICU = id.replace('outcomeAdmissionICU','').toLowerCase();
+            } else if (id === 'outcomeDateAdmission') {
+                let date = ValidationFunctions.convertDate(value);
+                formFields.outcomeDateAdmission = date;
+                formErrors.outcomeDateAdmission = Validate.section4(formFields).outcomeDateAdmission;
+                
+            } else if (id === 'outcomeAdmissionICUNo' || id === 'outcomeAdmissionICUYes' || id === 'outcomeAdmissionICUUnknown') {
+                formFields.outcomeAdmissionICU = id.replace('outcomeAdmissionICU','').toLowerCase();
 
-        } else if (id === 'outcomeAdmissionVentilationNo' || id === 'outcomeAdmissionVentilationYes' || 
-            id === 'outcomeAdmissionVentilationUnknown') {
-                formFields.outcomeAdmissionVentilation = id.replace('outcomeAdmissionVentilation','').toLowerCase();
+            } else if (id === 'outcomeAdmissionVentilationNo' || id === 'outcomeAdmissionVentilationYes' || 
+                id === 'outcomeAdmissionVentilationUnknown') {
+                    formFields.outcomeAdmissionVentilation = id.replace('outcomeAdmissionVentilation','').toLowerCase();
 
-        } else if (id === 'outcomeAdmissionOxygenationNo' || id === 'outcomeAdmissionOxygenationYes' || 
-            id === 'outcomeAdmissionOxygenationUnknown') {
-                formFields.outcomeAdmissionOxygenation = id.replace('outcomeAdmissionOxygenation','').toLowerCase();
+            } else if (id === 'outcomeAdmissionOxygenationNo' || id === 'outcomeAdmissionOxygenationYes' || 
+                id === 'outcomeAdmissionOxygenationUnknown') {
+                    formFields.outcomeAdmissionOxygenation = id.replace('outcomeAdmissionOxygenation','').toLowerCase();
 
-        } else if (id === 'outcomeHealthRecovered' || id === 'outcomeHealthNot' || id === 'outcomeHealthDeath'
-            || id === 'outcomeHealthUnknown' || id === 'outcomeHealthOther') {
+            } else if (id === 'outcomeHealthRecovered' || id === 'outcomeHealthNot' || id === 'outcomeHealthDeath'
+                || id === 'outcomeHealthUnknown' || id === 'outcomeHealthOther') {
 
-                formFields.outcomeHealth = id.replace('outcomeHealth','').toLowerCase();
-        } else if (id === 'outcomeHealthOtherWriteIn') {
+                    formFields.outcomeHealth = id.replace('outcomeHealth','').toLowerCase();
+            } else if (id === 'outcomeHealthOtherWriteIn') {
 
-            formFields.outcomeHealthOtherWriteIn = value;
-            formErrors.outcomeHealthOtherWriteIn = isFieldValid('outcomeHealthOtherWriteIn', value).message;
-        } else if (id === 'outcomeDateRelease') {
-            let date = convertDate(value);
-            formFields.outcomeDateRelease = date;
-            formErrors.outcomeDateRelease = isFieldValid('date', value).message;
-            
-        } else if (id === 'outcomeDateTest') {
-            let date = convertDate(value);
-            formFields.outcomeDateTest = date;
-            formErrors.outcomeDateTest = isFieldValid('date', value).message;
-        } else if (id === 'outcomeTestResultPositive' || id === 'outcomeTestResultNegative' || id === 'outcomeTestResultUnknown') {
+                formFields.outcomeHealthOtherWriteIn = value;
+                formErrors.outcomeHealthOtherWriteIn = Validate.section4(formFields).outcomeHealthOtherWriteIn;
+            } else if (id === 'outcomeDateRelease') {
+                let date = ValidationFunctions.convertDate(value);
+                formFields.outcomeDateRelease = date;
+                formErrors.outcomeDateRelease = Validate.section4(formFields).outcomeDateRelease;
+                
+            } else if (id === 'outcomeDateTest') {
+                let date = ValidationFunctions.convertDate(value);
+                formFields.outcomeDateTest = date;
+                formErrors.outcomeDateTest = Validate.section4(formFields).outcomeDateTest;
+            } else if (id === 'outcomeTestResultPositive' || id === 'outcomeTestResultNegative' || id === 'outcomeTestResultUnknown') {
 
-            formFields.outcomeTestResult = id.replace('outcomeTestResult','').toLowerCase();
+                formFields.outcomeTestResult = id.replace('outcomeTestResult','').toLowerCase();
 
-        } else if (id === 'outcomeTotalContacts') {
-            formFields.outcomeTotalContacts = value;
-            formErrors.outcomeTotalContacts = isFieldValid('outcomeTotalContacts', value).message;
-            
-        } else if (id === 'outcomeTotalContactsUnknown') {
-            if (e.target.checked) {
-                formFields.outcomeTotalContacts = 'unknown';
-            } else {
-                formFields.outcomeTotalContacts = document.getElementById('outcomeTotalContacts').value;
+            } else if (id === 'outcomeTotalContacts') {
+                formFields.outcomeTotalContacts = value;
+                formErrors.outcomeTotalContacts = Validate.section4(formFields).outcomeTotalContacts;
+                
+            } else if (id === 'outcomeTotalContactsUnknown') {
+                if (e.target.checked) {
+                    formFields.outcomeTotalContacts = 'unknown';
+                } else {
+                    formFields.outcomeTotalContacts = document.getElementById('outcomeTotalContacts').value;
 
-                // Check if data already entered
-                if (formFields.outcomeTotalContacts === '') {
-                    formErrors.outcomeTotalContacts = isFieldValid('outcomeTotalContacts', '').message;
+                    // Check if data already entered
+                    if (formFields.outcomeTotalContacts === '') {
+                        formErrors.outcomeTotalContacts = Validate.section4(formFields).outcomeTotalContacts;
+                    }
                 }
             }
+
+            this.setState({formErrors, formFields}, () => console.log(this.state));
         }
-
-
-
-
-
-        this.setState({formErrors, formFields}, () => console.log(this.state));
-    }
-
     }
     
     render() {
@@ -504,165 +496,13 @@ class ReportForm extends Component {
                 <Section1 handleChange={this.handleChange.section1} formFields={this.state.formFields} formErrors={this.state.formErrors} />
                 <Section2 handleChange={this.handleChange.section2} formFields={this.state.formFields} formErrors={this.state.formErrors} />
                 <Section3 handleChange={this.handleChange.section3} formFields={this.state.formFields} formErrors={this.state.formErrors} />
-                {/* 
-                
-                <Section4 handleChange={this.handleChange.temp} formFields={this.state.formFields} formErrors={this.state.formErrors} /> */}
+                <Section4 handleChange={this.handleChange.section4} formFields={this.state.formFields} formErrors={this.state.formErrors} />
                 <Button variant="primary" type="submit">
                     Submit
                 </Button>
             </form>
         );
     }
-}
-
-// const isFormValid = formErrors => {
-//     let valid = true;
-
-//     Object.values(formErrors).forEach(val => {
-//         val.length > 0 && (valid=false);
-//     });
-
-//     return valid;
-// }
-
-// converts yyyy-mm-dd to dd/mm/yyyy
-const convertDate = date => {
-    var newDate = new Date(date + 'T00:00:00');
-    var dd = String(newDate.getDate()).padStart(2, '0');
-    var mm = String(newDate.getMonth() + 1).padStart(2, '0');
-    var yyyy = newDate.getFullYear();
-
-    return dd + '/' + mm + '/' + yyyy;
-}
-
-const isFieldValid = (name, value) => {
-
-    let result = {valid: true, message: ''};
-
-    switch (name) {
-        // date check
-        case 'date':
-            var date = new Date(value + 'T00:00:00');
-            var today = new Date();
-            today.setHours(0,0,0,0);
-
-            if (date > today) {
-                result.valid = false;
-                result.message = 'The date cannot be in the future';
-            }
-            break;
-        // Country error checking
-        case 'reportingCountry':
-        case 'patientDiagnosisCountry':
-        case 'patientResidencyCountry':
-        case 'exposureWorkerCountry':
-        case 'exposureTravelCountry':
-        case 'exposureContactCountry':
-            if (!/^[a-zA-Z]+$/.test(value)) {
-                result.valid = false;
-                result.message = 'Country must only contain letters';
-            } else if (value.length < 4) {
-                result.valid = false;
-                result.message = 'Country must have at least 4 letters';
-            }
-            if (value === '') {
-                result.valid = false;
-                result.message = 'Please enter a country';
-            }
-            break;
-        // Section1
-        case 'uniqueCaseId':
-            if (value === '') {
-                result.valid = false;
-                result.message = 'Please enter a unique case identifier';
-            }
-            break;
-        case 'patientAgeYears':
-            if (value > 150) {
-                result.valid = false;
-                result.message = 'Years cannot be greater than 150';
-            }
-            break;
-        case 'patientAgeMonths':
-            if (value > 12) {
-                result.valid = false;
-                result.message = 'Months cannot be greater than 12';
-            }
-            break;
-        case 'patientAgeDays':
-            if (value > 31) {
-                result.valid = false;
-                result.message = 'Days cannot be greater than 31';
-            }
-            break;
-        case 'patientDiagnosisProvince':
-            if (!/^[a-zA-Z]+$/.test(value)) {
-                result.valid = false;
-                result.message = 'Province must only contain letters';
-            } else if (value.length < 2) {
-                result.valid = false;
-                result.message = 'Province must have at least 2 characters';
-            }
-            if (value === '') {
-                result.valid = false;
-                result.message = 'Please enter a Province';
-            }
-            break;
-        // Section 3
-        case 'exposureWorkerCity':
-        case 'exposureTravelCity':
-            if (!/^[a-zA-Z]+$/.test(value)) {
-                result.valid = false;
-                result.message = 'City must only contain letters';
-            } else if (value.length < 2) {
-                result.valid = false;
-                result.message = 'City must have at least 3 characters';
-            }
-            if (value === '') {
-                result.valid = false;
-                result.message = 'Please enter a City';
-            }
-            break;
-        case 'exposureWorkerFacility':
-            if (value.length < 2) {
-                result.valid = false;
-                result.message = 'Facility must have at least 3 characters';
-            }
-            if (value === '') {
-                result.valid = false;
-                result.message = 'Please enter a Facility';
-            }
-            break;
-        case 'exposureContactSetting':
-            if (value === '') {
-                result.valid = false;
-                result.message = 'Please type the contact setting';
-            }
-            break;
-        // Section 4
-        case 'outcomeHealthOtherWriteIn':
-            if (value === '') {
-                result.valid = false;
-                result.message = 'Please explain the health outcome';
-            } else if (value.length < 4) {
-                result.valid = false;
-                result.message = 'Please be more descriptive';
-            }
-            break;
-        case 'outcomeTotalContacts':
-            if (value === '') {
-                result.valid = false;
-                result.message = 'Please enter total number of contacts';
-            } else if (!/^[0-9]+$/.test(value)) {
-                result.valid = false;
-                result.message = 'Number of contacts should consist of only numbers/digits';
-            }
-            break;
-        default:
-            break;
-    }
-
-    return result;
 }
 
 export default ReportForm;
