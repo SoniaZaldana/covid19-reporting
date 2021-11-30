@@ -8,14 +8,15 @@ export const Section0 = ({handleChange, formFields, formErrors}) => (
       <Row className="mb-3">
         <Form.Group as={Col} controlId="reportingDate" onChange={handleChange} md>
           <Form.Label><strong>Date of reporting to national health authority</strong></Form.Label>
-          <Form.Control type="date" />
+          <Form.Control type="date" required />
           {formErrors.reportingDate.length > 0 && (
             <Form.Text className="text-danger">{formErrors.reportingDate}</Form.Text>
           )}
         </Form.Group>
         <Form.Group as={Col} controlId="reportingCountry" onChange={handleChange} md>
           <Form.Label>Reporting country</Form.Label>
-          <Form.Control type="text"  />
+
+          <Form.Control type="text" required />
           {formErrors.reportingCountry.length > 0 && (
             <Form.Text className="text-danger">{formErrors.reportingCountry}</Form.Text>
           )}
@@ -66,6 +67,9 @@ export const Section0 = ({handleChange, formFields, formErrors}) => (
         <Form.Group as={Col} controlId="whyTestedWriteIn" onChange={handleChange} >
           <Form.Label>If none of the above please explain</Form.Label>
           <Form.Control type="text" disabled={formFields.whyTested.length !== 0} />
+          {formErrors.whyTestedWriteIn.length > 0 && (
+            <Form.Text className="text-warning">{formErrors.whyTestedWriteIn}</Form.Text>
+          )}
         </Form.Group>
       </Row>
     </>

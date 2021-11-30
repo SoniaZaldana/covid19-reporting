@@ -8,7 +8,7 @@ export const Section2 = ({handleChange, formFields, formErrors}) => (
     <Row className="mb-3">
       <Form.Group as={Col} controlId="clinicalDateLabTest" onChange={handleChange} md>
         <Form.Label>Date of first laboratory confirmation test:</Form.Label>
-        <Form.Control type="date" />
+        <Form.Control type="date" required />
         {formErrors.clinicalDateLabTest.length > 0 && (
           <Form.Text className="text-danger">{formErrors.clinicalDateLabTest}</Form.Text>
         )}
@@ -94,7 +94,10 @@ export const Section2 = ({handleChange, formFields, formErrors}) => (
                 id="clinicalUnderlyingConditionsPregnancy"
                 disabled={formFields.clinicalUnderlyingConditions !== 'yes'}
               />
-              <Form.Control className="pregnancy-trimester" type="text" disabled={formFields.clinicalUnderlyingConditions !== 'yes'} />)
+              <Form.Control className="pregnancy-trimester" type="number" min="1" max="3" disabled={formFields.clinicalUnderlyingConditions !== 'yes'} onChange={handleChange} />)
+              {formErrors.clinicalUnderlyingConditionsPregnancy.length > 0 && (
+                <Form.Text className="text-danger">{formErrors.clinicalUnderlyingConditionsPregnancy}</Form.Text>
+              )}
             </div>
             <Form.Check
               type="checkbox"
@@ -169,6 +172,9 @@ export const Section2 = ({handleChange, formFields, formErrors}) => (
       <Form.Group as={Col} controlId="clinicalUnderlyingConditionsWriteIn" onChange={handleChange} >
         <Form.Label>Other(s), please specify:</Form.Label>
         <Form.Control type="text" disabled={formFields.clinicalUnderlyingConditions !== 'yes'}/>
+        {formErrors.clinicalUnderlyingConditionsWriteIn.length > 0 && (
+          <Form.Text className="text-danger">{formErrors.clinicalUnderlyingConditionsWriteIn}</Form.Text>
+        )}
       </Form.Group>
     </Row>
     <strong>Health Status at time of reporting:</strong>
