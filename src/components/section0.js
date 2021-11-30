@@ -15,6 +15,7 @@ export const Section0 = ({handleChange, formFields, formErrors}) => (
         </Form.Group>
         <Form.Group as={Col} controlId="reportingCountry" onChange={handleChange} md>
           <Form.Label>Reporting country</Form.Label>
+
           <Form.Control type="text" required />
           {formErrors.reportingCountry.length > 0 && (
             <Form.Text className="text-danger">{formErrors.reportingCountry}</Form.Text>

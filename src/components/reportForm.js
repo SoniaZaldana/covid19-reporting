@@ -106,6 +106,9 @@ class ReportForm extends Component {
                 exposureTravelCity: ['','',''],
                 exposureTravelDeparture: ['','',''],
                 exposureContact: '',
+                exposureTravelCountry: ['','',''],
+                exposureTravelCity: ['','',''],
+                exposureTravelDeparture: ['','',''],
                 exposureContactSetting: '',
                 exposureContactId: ['','','','',''],
                 exposureContactFirstDate: ['','','','',''],
@@ -118,7 +121,8 @@ class ReportForm extends Component {
                 outcomeDateRelease: '',
                 outcomeDateTest: '',
                 outcomeTotalContacts: '',
-                missingSections: ''
+                missingSections: '',
+                outcomeTotalContacts: ''
             }
         }
     }
