@@ -79,6 +79,9 @@ export const Section3 = ({handleChange, formFields, formErrors}) => (
           id="exposureTravelUnknown"
           required
         />
+        {formErrors.exposureTravel.length > 0 && (
+          <Form.Text className="text-danger">{formErrors.exposureTravel}</Form.Text>
+        )}
       </Form.Group>
     </Row>
     <i>If yes,</i> please specify the places the patient travelled to and date of departure from the places:

@@ -196,6 +196,7 @@ const Validate = {
             exposureWorkerCountry: '',
             exposureWorkerCity: '',
             exposureWorkerFacility: '',
+            exposureTravel: '',
             exposureTravelCountry: ['','',''],
             exposureTravelCity: ['','',''],
             exposureTravelDeparture: ['','',''],
@@ -206,12 +207,126 @@ const Validate = {
             exposureContactCountry: ''
         }
 
+        // If health care worker is set to yes,
+        if (formFields.exposureWorker === 'yes') {
+
+            // Check if country is valid
+            sectionStatus.exposureWorkerCountry = ValidationFunctions.isCountryInvalid(formFields.exposureWorkerCountry).message;
+            sectionStatus.invalid = sectionStatus.exposureWorkerCountry ? 1 : 0;
+
+            // Check if city is valid
+            sectionStatus.exposureWorkerCity = ValidationFunctions.isCityInvalid(formFields.exposureWorkerCity).message;
+            sectionStatus.invalid = sectionStatus.exposureWorkerCity ? 1 : 0;
+
+            // Check if facility is valid
+            sectionStatus.exposureWorkerFacility = ValidationFunctions.isFacilityInvalid(formFields.exposureWorkerFacility).message;
+            sectionStatus.invalid = sectionStatus.exposureWorkerFacility ? 1 : 0;
+        }
+
+        if (formFields.exposureTravel === 'yes') {
+            // Check place information (max 3)
+            for (var i = 0; i < 3; i++) {
+
+                // Check if country is valid
+                sectionStatus.exposureTravelCountry[i] = ValidationFunctions.isCountryInvalid(formFields.exposureTravelCountry[i]).message;
+                sectionStatus.invalid = sectionStatus.exposureTravelCountry[i] ? 1 : 0;
+
+                // Check if city is valid
+                sectionStatus.exposureTravelCity[i] = ValidationFunctions.isCityInvalid(formFields.exposureTravelCity[i]).message;
+                sectionStatus.invalid = sectionStatus.exposureTravelCity[i] ? 1 : 0;
+
+                // Check if depature date is valid
+                const exposureTravelDeparture = ValidationFunctions.unconvertDate(formFields.exposureTravelDeparture[i]);
+                sectionStatus.exposureTravelDeparture[i] = ValidationFunctions.isDateInvalid(exposureTravelDeparture).message;
+                sectionStatus.invalid = sectionStatus.exposureTravelDeparture[i] ? 1 : 0;
+            }
+        } else if (formFields.exposureTravel === '') {
+            // Has not entered travel data
+            sectionStatus.invalid = 1;
+            sectionStatus.exposureTravel = "Please enter if case has travelled in the last 14 days."
+        }
+
+        if (formFields.exposureContact === 'yes') {
+            sectionStatus.invalid = 1;
+            sectionStatus.exposureContactSetting = ValidationFunctions.isContactConditionInvalid(formFields.exposureContactSetting).message;
+
+            for (var j = 0; j < 5; j++) {
+
+                // Check if contact ID is valid
+                sectionStatus.exposureContactId[j] = ValidationFunctions.isContactIdInvalid(formFields.exposureContactId[j]).message;
+                sectionStatus.invalid = sectionStatus.exposureContactId[j] ? 1 : 0;
+
+                // Check if first & last date of contact are valid
+                const exposureContactFirstDate = ValidationFunctions.unconvertDate(formFields.exposureContactFirstDate[j]);
+                const exposureContactLastDate = ValidationFunctions.unconvertDate(formFields.exposureContactLastDate[j]);
+                sectionStatus.exposureContactFirstDate[j] = ValidationFunctions.isDateInvalid(exposureContactFirstDate).message;
+                sectionStatus.exposureContactLastDate[j] = ValidationFunctions.isDateInvalid(exposureContactLastDate).message;
+                sectionStatus.invalid = sectionStatus.exposureContactFirstDate[j] ? 1 : 0;
+                sectionStatus.invalid = sectionStatus.exposureContactLastDate[j] ? 1 : 0;
+            }
+        }
+        
+        // Check if mostly likely country of exposure is valid
+        sectionStatus.exposureContactCountry = ValidationFunctions.isCountryInvalid(formFields.exposureContactCountry).message;
+        sectionStatus.invalid = sectionStatus.exposureContactCountry ? 1 : 0;
+
+
+        if (submission && formErrors) {
+            formErrors.exposureWorkerCountry = sectionStatus.exposureWorkerCountry;
+            formErrors.exposureWorkerCity = sectionStatus.exposureWorkerCity;
+            formErrors.exposureWorkerFacility = sectionStatus.exposureWorkerFacility;
+            formErrors.exposureContactSetting = sectionStatus.exposureContactSetting;
+            formErrors.exposureTravelCountry = sectionStatus.exposureTravelCountry;
+            formErrors.exposureTravelCity = sectionStatus.exposureTravelCity;
+            formErrors.exposureTravelDeparture = sectionStatus.exposureTravelDeparture;
+            formErrors.exposureContactId = sectionStatus.exposureContactId;
+            formErrors.exposureContactFirstDate = sectionStatus.exposureContactFirstDate;
+            formErrors.exposureContactLastDate = sectionStatus.exposureContactLastDate;
+            formErrors.exposureContactCountry = sectionStatus.exposureContactCountry;
+        }
+
         return sectionStatus;
     }
 
 }
 const ValidationFunctions = {
 
+    /*
+        Check if contact ID is valid
+        Returns object {status, message}
+
+        Status is set to
+        0 when contact id is valid,
+        1 when contact id is empty
+    */
+    isContactIdInvalid: (contactID) => {
+        let result = {status: 0, message: ''};
+
+        if (contactID === '') {
+            result.status = 1;
+            result.message = "Please enter a contact ID"
+        }
+        
+        return result;
+    },
+    /*
+        Check if contact setting is valid
+        Returns object {status, message}
+
+        Status is set to
+        0 when contact statement is valid,
+        1 when contact statement is empty or too short
+    */
+   isContactConditionInvalid: (conditionStatement) => {
+    let result = {status: 0, message: ''};
+
+    if (conditionStatement === '' || conditionStatement.length < 5) {
+        result.status = 1;
+        result.message = "Please explain the contact setting"
+    }
+    
+    return result;
+   },
     /*
         Checks if underlying conditions are valid
         Returns object {status, message}
@@ -252,7 +367,7 @@ const ValidationFunctions = {
             // No underlying conditions checked
             if (!underlyingConditionsWriteIn) {
                 result.status = 1;
-                result.message = "Please check off or write in any underlying conditions.";
+                result.message = "Please check off or write in any underlying conditions";
             }
         }
 
@@ -391,6 +506,55 @@ const ValidationFunctions = {
         if (province === '') {
             result.status = 3;
             result.message = 'Please enter a province';
+        }
+
+        return result;
+    },
+    /*
+        Checks if city is valid
+        Returns object {status, message}
+        
+        Status is set to 0 when city is valid, 1 when city contains other characters
+        2 when city is less than 2 letters, 3 if empty string
+
+        Message is empty string when city is valid, or set to corresponding status response
+    */
+    isCityInvalid: city => {
+        let result = {status: 0, message: ''};
+
+        if (!/^[a-zA-Z]+$/.test(city)) {
+            result.status = 1;
+            result.message = 'City must only contain letters';
+        } else if (city.length < 2) {
+            result.status = 2;
+            result.message = 'City must have at least 3 letters';
+        }
+        if (city === '') {
+            result.status = 3;
+            result.message = 'Please enter a City';
+        }
+
+        return result;
+    },
+    /*
+        Checks if facility is valid
+        Returns object {status, message}
+        
+        Status is set to 0 when facility is valid, 1 when facility is less than 3 letters,
+        2 if empty string
+
+        Message is empty string when facility is valid, or set to corresponding status response
+    */
+    isFacilityInvalid: facility => {
+        let result = {status: 0, message: ''};
+
+        if (facility.length < 2) {
+            result.status = 1;
+            result.message = 'Facility must have at least 3 letters';
+        }
+        if (facility === '') {
+            result.status = 2;
+            result.message = 'Please enter a Facility';
         }
 
         return result;

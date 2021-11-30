@@ -100,6 +100,7 @@ class ReportForm extends Component {
                 exposureWorkerCountry: '',
                 exposureWorkerCity: '',
                 exposureWorkerFacility: '',
+                exposureTravel: '',
                 exposureTravelCountry: ['','',''],
                 exposureTravelCity: ['','',''],
                 exposureTravelDeparture: ['','',''],
@@ -339,35 +340,36 @@ class ReportForm extends Component {
     
             } else if (id === 'exposureWorkerCountry') {
                 formFields.exposureWorkerCountry = value;
-                formErrors.exposureWorkerCountry = isFieldValid(id, value).message;
+                formErrors.exposureWorkerCountry = Validate.section3(formFields).exposureWorkerCountry;
             } else if (id === 'exposureWorkerCity') {
                 formFields.exposureWorkerCity = value;
-                formErrors.exposureWorkerCity = isFieldValid(id, value).message;
+                formErrors.exposureWorkerCity = Validate.section3(formFields).exposureWorkerCity;
     
             } else if (id === 'exposureWorkerFacility') {
                 formFields.exposureWorkerFacility = value;
-                formErrors.exposureWorkerFacility = isFieldValid(id, value).message;
+                formErrors.exposureWorkerFacility = Validate.section3(formFields).exposureWorkerFacility;
     
     
             } else if (id === 'exposureTravelNo' || id === 'exposureTravelYes' || id === 'exposureTravelUnknown') {
                 formFields.exposureTravel = id.replace('exposureTravel','').toLowerCase();
+                formErrors.exposureTravel = Validate.section3(formFields).exposureTravel;
                 
             } else if (id.includes('exposureTravelCountry')) {
                 let index = parseInt( id.replace('exposureTravelCountry','') ) - 1;
                 formFields.exposureTravelCountry[index] = value;
-                formErrors.exposureTravelCountry[index] = isFieldValid('exposureTravelCountry', value).message;
+                formErrors.exposureTravelCountry[index] = Validate.section3(formFields).exposureTravelCountry[index];
     
             } else if (id.includes('exposureTravelCity')) {
                 let index = parseInt( id.replace('exposureTravelCity','') ) - 1;
                 formFields.exposureTravelCity[index] = value;
-                formErrors.exposureTravelCity[index] = isFieldValid('exposureTravelCity', value).message;
+                formErrors.exposureTravelCity[index] = Validate.section3(formFields).exposureTravelCity[index];
     
             } else if (id.includes('exposureTravelDeparture')) {
                 let index = parseInt( id.replace('exposureTravelDeparture','') ) - 1;
-                let date = convertDate(value);
+                let date = ValidationFunctions.convertDate(value);
     
                 formFields.exposureTravelDeparture[index] = date;
-                formErrors.exposureTravelDeparture[index] = isFieldValid('date', value).message;
+                formErrors.exposureTravelDeparture[index] = Validate.section3(formFields).exposureTravelDeparture[index];
     
             } else if (id === 'exposureVisitedFacilityNo' || id === 'exposureVisitedFacilityYes' || 
                 id === 'exposureVisitedFacilityUnknown') {
@@ -379,27 +381,28 @@ class ReportForm extends Component {
     
             } else if (id === 'exposureContactSetting') {
                 formFields.exposureContactSetting = value;
-                formErrors.exposureContactSetting = isFieldValid('exposureContactSetting', value).message;
+                formErrors.exposureContactSetting = Validate.section3(formFields).exposureContactSetting;
     
             } else if (id.includes('exposureContactId')) {
                 let index = parseInt( id.replace('exposureContactId','') ) - 1;
                 formFields.exposureContactId[index] = value;
+                formErrors.exposureContactId[index] = Validate.section3(formFields).exposureContactId[index];
     
             } else if (id.includes('exposureContactFirstDate')) {
                 let index = parseInt( id.replace('exposureContactFirstDate','') ) - 1;
-                let date = convertDate(value);
+                let date = ValidationFunctions.convertDate(value);
                 formFields.exposureContactFirstDate[index] = date;
-                formErrors.exposureContactFirstDate[index] = isFieldValid('date', value).message;
+                formErrors.exposureContactFirstDate[index] = Validate.section3(formFields).exposureContactFirstDate[index];
     
             } else if (id.includes('exposureContactLastDate')) {
                 let index = parseInt( id.replace('exposureContactLastDate','') ) - 1;
-                let date = convertDate(value);
+                let date = ValidationFunctions.convertDate(value);
                 formFields.exposureContactLastDate[index] = date;
-                formErrors.exposureContactLastDate[index] = isFieldValid('date', value).message;
+                formErrors.exposureContactLastDate[index] = Validate.section3(formFields).exposureContactLastDate[index];
     
             } else if (id === 'exposureContactCountry') {
                 formFields.exposureContactCountry = value;
-                formErrors.exposureContactCountry = isFieldValid(id, value).message;
+                formErrors.exposureContactCountry = Validate.section3(formFields).exposureContactCountry;
             }
 
             this.setState({formErrors, formFields}, () => console.log(this.state));
