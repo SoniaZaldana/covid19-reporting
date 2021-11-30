@@ -138,6 +138,9 @@ export const Section3 = ({handleChange, formFields, formErrors}) => (
           id="exposureVisitedFacilityUnknown"
           required
         />
+        {formErrors.exposureTravel.length > 0 && (
+          <Form.Text className="text-danger">{formErrors.exposureTravel}</Form.Text>
+        )}
       </Form.Group>
     </Row>
     <Row className="mb-3">
@@ -161,6 +164,9 @@ export const Section3 = ({handleChange, formFields, formErrors}) => (
           name="exposureContact"
           id="exposureContactUnknown"
         />
+        {formErrors.exposureContact.length > 0 && (
+          <Form.Text className="text-danger">{formErrors.exposureContact}</Form.Text>
+        )}
       </Form.Group>
     </Row>
     <Row className="mb-3">

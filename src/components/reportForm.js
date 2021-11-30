@@ -6,6 +6,7 @@ import {Section2} from './section2.js';
 import {Section3} from './section3.js';
 import {Section4} from './section4.js';
 import Button from 'react-bootstrap/Button';
+import Form from 'react-bootstrap/Form';
 import { Validate, ValidationFunctions } from '../Validation.js';
 
 class ReportForm extends Component {
@@ -104,6 +105,7 @@ class ReportForm extends Component {
                 exposureTravelCountry: ['','',''],
                 exposureTravelCity: ['','',''],
                 exposureTravelDeparture: ['','',''],
+                exposureContact: '',
                 exposureContactSetting: '',
                 exposureContactId: ['','','','',''],
                 exposureContactFirstDate: ['','','','',''],
@@ -115,7 +117,8 @@ class ReportForm extends Component {
                 outcomeHealthOtherWriteIn: '',
                 outcomeDateRelease: '',
                 outcomeDateTest: '',
-                outcomeTotalContacts: ''
+                outcomeTotalContacts: '',
+                missingSections: ''
             }
         }
     }
@@ -128,7 +131,29 @@ class ReportForm extends Component {
         let formErrors = this.state.formErrors;
         let formFields = this.state.formFields;
 
-        Validate.section0(formFields, formErrors, 1);
+        const s0valid = Validate.section0(formFields, formErrors, 1);
+        const s1valid = Validate.section1(formFields, formErrors, 1);
+        const s2valid = Validate.section2(formFields, formErrors, 1);
+        const s3valid = Validate.section3(formFields, formErrors, 1);
+        const s4valid = Validate.section4(formFields, formErrors, 1);
+
+        var message = '';
+        message += s0valid.invalid ? ' Section 0 ;' : '';
+        message += s1valid.invalid ? ' Section 1 ;' : '';
+        message += s2valid.invalid ? ' Section 2 ;' : '';
+        message += s3valid.invalid ? ' Section 3 ;' : '';
+        message += s4valid.invalid ? ' Section 4 ;' : '';
+        formErrors.missingSections = "Please re-visit the following section(s):" + message;
+
+        // Update error messages and re-render components
+        this.setState({formErrors, formFields}, () => console.log(this.state));
+
+        // If valid, data ready to build JSON object
+        if (!s0valid.invalid && !s1valid.invalid && !s2valid.invalid && !s3valid.invalid && !s4valid.invalid) {
+            console.log("all data valid");
+        }
+
+        // Note: Remember to Add clinicalUnderlyingConditionsWriteIn to clinicalUnderlyingConditionsCheckAll array for JSON object
     }
 
     handleChange = {
@@ -489,7 +514,6 @@ class ReportForm extends Component {
     }
     
     render() {
-        console.log(this.state)
         return (
             <form onSubmit={this.handleSubmit}>
                 <Section0 handleChange={this.handleChange.section0} formFields={this.state.formFields} formErrors={this.state.formErrors} />
@@ -497,6 +521,10 @@ class ReportForm extends Component {
                 <Section2 handleChange={this.handleChange.section2} formFields={this.state.formFields} formErrors={this.state.formErrors} />
                 <Section3 handleChange={this.handleChange.section3} formFields={this.state.formFields} formErrors={this.state.formErrors} />
                 <Section4 handleChange={this.handleChange.section4} formFields={this.state.formFields} formErrors={this.state.formErrors} />
+                {this.state.formErrors.missingSections.length > 0 && (
+                    <Form.Text className="text-danger">{this.state.formErrors.missingSections}</Form.Text>
+                )}
+                <br/>
                 <Button variant="primary" type="submit">
                     Submit
                 </Button>

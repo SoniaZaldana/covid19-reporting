@@ -8,7 +8,7 @@ export const Section2 = ({handleChange, formFields, formErrors}) => (
     <Row className="mb-3">
       <Form.Group as={Col} controlId="clinicalDateLabTest" onChange={handleChange} md>
         <Form.Label>Date of first laboratory confirmation test:</Form.Label>
-        <Form.Control type="date" />
+        <Form.Control type="date" required />
         {formErrors.clinicalDateLabTest.length > 0 && (
           <Form.Text className="text-danger">{formErrors.clinicalDateLabTest}</Form.Text>
         )}

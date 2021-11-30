@@ -200,6 +200,7 @@ const Validate = {
             exposureTravelCountry: ['','',''],
             exposureTravelCity: ['','',''],
             exposureTravelDeparture: ['','',''],
+            exposureContact: '',
             exposureContactSetting: '',
             exposureContactId: ['','','','',''],
             exposureContactFirstDate: ['','','','',''],
@@ -243,7 +244,7 @@ const Validate = {
         } else if (formFields.exposureTravel === '') {
             // Has not entered travel data
             sectionStatus.invalid = 1;
-            sectionStatus.exposureTravel = "Please enter if case has travelled in the last 14 days."
+            sectionStatus.exposureTravel = "Please enter if case has travelled in the last 14 days"
         }
 
         if (formFields.exposureContact === 'yes') {
@@ -264,6 +265,10 @@ const Validate = {
                 sectionStatus.invalid = sectionStatus.exposureContactFirstDate[j] ? 1 : 0;
                 sectionStatus.invalid = sectionStatus.exposureContactLastDate[j] ? 1 : 0;
             }
+        } else if (formFields.exposureContact === '') {
+            // Has not entered exposure data
+            sectionStatus.invalid = 1;
+            sectionStatus.exposureContact = "Please enter if case has had contact with a confirmed case in the last 14 days"
         }
         
         // Check if mostly likely country of exposure is valid
@@ -275,6 +280,7 @@ const Validate = {
             formErrors.exposureWorkerCountry = sectionStatus.exposureWorkerCountry;
             formErrors.exposureWorkerCity = sectionStatus.exposureWorkerCity;
             formErrors.exposureWorkerFacility = sectionStatus.exposureWorkerFacility;
+            formErrors.exposureContact = sectionStatus.exposureContact;
             formErrors.exposureContactSetting = sectionStatus.exposureContactSetting;
             formErrors.exposureTravelCountry = sectionStatus.exposureTravelCountry;
             formErrors.exposureTravelCity = sectionStatus.exposureTravelCity;
@@ -321,16 +327,27 @@ const Validate = {
         sectionStatus.invalid = sectionStatus.outcomeDateTest ? 1 : 0;
 
         // Check if outcome description is valid
-        sectionStatus.outcomeHealthOtherWriteIn = ValidationFunctions.isHealthOutcomeStatemantInvalid(formFields.outcomeHealthOtherWriteIn).message;
-        sectionStatus.invalid = sectionStatus.outcomeHealthOtherWriteIn ? 1 : 0;
+        if (formFields.outcomeHealth === 'other') {
+            sectionStatus.outcomeHealthOtherWriteIn = ValidationFunctions.isHealthOutcomeStatemantInvalid(formFields.outcomeHealthOtherWriteIn).message;
+            sectionStatus.invalid = sectionStatus.outcomeHealthOtherWriteIn ? 1 : 0;
+        }
 
         // Check total number of contacts for this case
         sectionStatus.outcomeTotalContacts = ValidationFunctions.isTotalNumberContactInvalid(formFields.outcomeTotalContacts).message;
         sectionStatus.invalid = sectionStatus.outcomeTotalContacts ? 1 : 0;
 
+        if (submission && formErrors) {
+            formErrors.outcomeDateResubmission = sectionStatus.outcomeDateResubmission;
+            formErrors.outcomeDevelopYesDate = sectionStatus.outcomeDevelopYesDate;
+            formErrors.outcomeDateAdmission = sectionStatus.outcomeDateAdmission;
+            formErrors.outcomeDateRelease = sectionStatus.outcomeDateRelease;
+            formErrors.outcomeDateTest = sectionStatus.outcomeDateTest;
+            formErrors.outcomeHealthOtherWriteIn = sectionStatus.outcomeHealthOtherWriteIn;
+            formErrors.outcomeTotalContacts = sectionStatus.outcomeTotalContacts;
+        }
+
         return sectionStatus;
     }
-
 }
 const ValidationFunctions = {
 
@@ -349,7 +366,7 @@ const ValidationFunctions = {
         if (number === '') {
             result.status = 1;
             result.message = 'Please enter total number of contacts';
-        } else if (!/^[0-9]+$/.test(number)) {
+        } else if (number !== 'unknown' && !/^[0-9]+$/.test(number)) {
             result.status = 2;
             result.message = 'Number of contacts should consist of only numbers/digits';
         }

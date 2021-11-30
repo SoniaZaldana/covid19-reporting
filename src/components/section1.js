@@ -8,7 +8,7 @@ export const Section1 = ({handleChange, formFields, formErrors}) => (
       <Row className="mb-3">
         <Form.Group as={Col} controlId="uniqueCaseId" onChange={handleChange}>
           <Form.Label><strong>Unique Case Identifier (used in country):</strong></Form.Label>
-          <Form.Control type="text" />
+          <Form.Control type="text" required />
           {formErrors.uniqueCaseId.length > 0 && (
             <Form.Text className="text-danger">{formErrors.uniqueCaseId}</Form.Text>
           )}
@@ -17,21 +17,21 @@ export const Section1 = ({handleChange, formFields, formErrors}) => (
       <Row className="mb-3">
         <Form.Group as={Col} controlId="patientAgeYears" onChange={handleChange} md>
           <Form.Label>Age (years):</Form.Label>
-          <Form.Control type="number" min="0" max="150" disabled={formFields.patientAgeMonths || formFields.patientAgeDays} />
+          <Form.Control type="number" min="0" max="150" disabled={formFields.patientAgeMonths || formFields.patientAgeDays} required/>
           {formErrors.patientAgeYears.length > 0 && (
             <Form.Text className="text-danger">{formErrors.patientAgeYears}</Form.Text>
           )}
         </Form.Group>
         <Form.Group as={Col} controlId="patientAgeMonths" onChange={handleChange} md>
           <Form.Label>If &lt;1 year old (in months)</Form.Label>
-          <Form.Control type="number" min="0" max="12" disabled={formFields.patientAgeYears || formFields.patientAgeDays} />
+          <Form.Control type="number" min="0" max="12" disabled={formFields.patientAgeYears || formFields.patientAgeDays} required/>
           {formErrors.patientAgeMonths.length > 0 && (
             <Form.Text className="text-danger">{formErrors.patientAgeMonths}</Form.Text>
           )}
         </Form.Group>
         <Form.Group as={Col} controlId="patientAgeDays" onChange={handleChange} md>
           <Form.Label>or if &lt;1 month (in days)</Form.Label>
-          <Form.Control type="number" min="0" max="31" disabled={formFields.patientAgeYears || formFields.patientAgeMonths} />
+          <Form.Control type="number" min="0" max="31" disabled={formFields.patientAgeYears || formFields.patientAgeMonths} required/>
           {formErrors.patientAgeDays.length > 0 && (
             <Form.Text className="text-danger">{formErrors.patientAgeDays}</Form.Text>
           )}
@@ -65,14 +65,14 @@ export const Section1 = ({handleChange, formFields, formErrors}) => (
       <Row className="mb-3">
         <Form.Group as={Col} controlId="patientDiagnosisCountry" onChange={handleChange} md>
           <Form.Label>Place where the case was diagnosed: Country:</Form.Label>
-          <Form.Control type="text" />
+          <Form.Control type="text" required />
           {formErrors.patientDiagnosisCountry.length > 0 && (
             <Form.Text className="text-danger">{formErrors.patientDiagnosisCountry}</Form.Text>
           )}
         </Form.Group>
         <Form.Group as={Col} controlId="patientDiagnosisProvince" onChange={handleChange} md>
           <Form.Label>Admin Level 1 (province):</Form.Label>
-          <Form.Control type="text"/>
+          <Form.Control type="text" required />
           {formErrors.patientDiagnosisProvince.length > 0 && (
             <Form.Text className="text-danger">{formErrors.patientDiagnosisProvince}</Form.Text>
           )}
@@ -81,7 +81,7 @@ export const Section1 = ({handleChange, formFields, formErrors}) => (
       <Row className="mb-3">
         <Form.Group as={Col} controlId="patientResidencyCountry" onChange={handleChange}>
           <Form.Label>Case usual place of residency: Country:</Form.Label>
-          <Form.Control type="text" />
+          <Form.Control type="text" required />
           {formErrors.patientResidencyCountry.length > 0 && (
             <Form.Text className="text-danger">{formErrors.patientResidencyCountry}</Form.Text>
           )}
