@@ -58,7 +58,7 @@ const Validate = {
         sectionStatus.uniqueCaseId = ValidationFunctions.isUniqueCaseIdInvalid(formFields.uniqueCaseId).message;
         sectionStatus.invalid = sectionStatus.uniqueCaseId ? 1 : 0;
 
-        const AgeResult = ValidationFunctions.isAgeValid(formFields.patientAgeYears, formFields.patientAgeMonths, formFields.patientAgeDays);
+        const AgeResult = ValidationFunctions.isAgeInvalid(formFields.patientAgeYears, formFields.patientAgeMonths, formFields.patientAgeDays);
         if (AgeResult.status) {
             sectionStatus.invalid = 1;
 
@@ -103,11 +103,161 @@ const Validate = {
 
 
         return sectionStatus;
+    },
+    /*
+        Checks section 2 for invalid data.
+
+        When submission flag is 1, validation will update the entire section with corresponding error messages
+    */
+    section2: (formFields, formErrors = undefined, submission = 0) => {
+        var sectionStatus = {
+            invalid: 0,
+            clinicalDateLabTest: '',
+            clinicalSymptoms: '',
+            clinicalSymptomsDate: '',
+            clinicalUnderlyingConditions: '',
+            clinicalUnderlyingConditionsPregnancy: '',
+            clinicalUnderlyingConditionsWriteIn: '',
+            clinicalAdmission: '',
+            clinicalAdmissionDate: '',
+            clinicalAdmissionIsolationDate: ''
+        }
+
+        // Check is date is valid
+        const clinicalDateLabTest = ValidationFunctions.unconvertDate(formFields.clinicalDateLabTest);
+        sectionStatus.clinicalDateLabTest = ValidationFunctions.isDateInvalid(clinicalDateLabTest).message;
+        sectionStatus.invalid = sectionStatus.clinicalDateLabTest ? 1 : 0;
+
+        // Check if data for symptons at time of testing provided
+        if (!formFields.clinicalSymptoms) {
+            sectionStatus.invalid = 1;
+            sectionStatus.clinicalSymptoms = "Please select if there were any symptoms or signs at time of testing."
+        }
+
+        // Check is date is valid
+        const clinicalSymptomsDate = ValidationFunctions.unconvertDate(formFields.clinicalSymptomsDate);
+        sectionStatus.clinicalSymptomsDate = ValidationFunctions.isDateInvalid(clinicalSymptomsDate).message;
+        sectionStatus.invalid = sectionStatus.clinicalSymptomsDate ? 1 : 0;
+
+        // Check if data for underlying conditions
+        if (!formFields.clinicalUnderlyingConditions) {
+            sectionStatus.invalid = 1;
+            sectionStatus.clinicalUnderlyingConditions = "Please select if there are any underlying conditions."
+        }
+
+        // Check clinical underlying condition values
+        if (formFields.clinicalUnderlyingConditions === 'yes') {
+
+            const conditionResult = ValidationFunctions.isUnderlyingConditionsInvalid(formFields.clinicalUnderlyingConditionsCheckAll, formFields.clinicalUnderlyingConditionsWriteIn);
+
+            if (conditionResult.status) {
+
+                if (conditionResult.status === 1) {
+                    sectionStatus.invalid = 1;
+                    sectionStatus.clinicalUnderlyingConditionsWriteIn = conditionResult.message;
+                } else {
+                    sectionStatus.invalid = 1;
+                    sectionStatus.clinicalUnderlyingConditionsPregnancy = conditionResult.message;
+                }
+            } 
+        }
+
+        // Check is date is valid
+        const clinicalAdmissionDate = ValidationFunctions.unconvertDate(formFields.clinicalAdmissionDate);
+        sectionStatus.clinicalAdmissionDate = ValidationFunctions.isDateInvalid(clinicalAdmissionDate).message;
+        sectionStatus.invalid = sectionStatus.clinicalAdmissionDate ? 1 : 0;
+
+        const clinicalAdmissionIsolationDate = ValidationFunctions.unconvertDate(formFields.clinicalAdmissionIsolationDate);
+        sectionStatus.clinicalAdmissionIsolationDate = ValidationFunctions.isDateInvalid(clinicalAdmissionIsolationDate).message;
+        sectionStatus.invalid = sectionStatus.clinicalAdmissionIsolationDate ? 1 : 0;
+
+
+        if (submission && formErrors) {
+            formErrors.clinicalDateLabTest = sectionStatus.clinicalDateLabTest;
+            formErrors.clinicalSymptoms = sectionStatus.clinicalSymptoms;
+            formErrors.clinicalSymptomsDate = sectionStatus.clinicalSymptomsDate;
+            formErrors.clinicalUnderlyingConditions = sectionStatus.clinicalUnderlyingConditions;
+            formErrors.clinicalUnderlyingConditionsWriteIn = sectionStatus.clinicalUnderlyingConditionsWriteIn;
+            formErrors.clinicalUnderlyingConditionsPregnancy = sectionStatus.clinicalUnderlyingConditionsPregnancy;
+            formErrors.clinicalAdmissionDate = sectionStatus.clinicalAdmissionDate;
+            formErrors.clinicalAdmissionIsolationDate = sectionStatus.clinicalAdmissionIsolationDate;
+        }
+        
+        return sectionStatus;
+    },
+    /*
+        Checks section 3 for invalid data.
+
+        When submission flag is 1, validation will update the entire section with corresponding error messages
+    */
+    section3: (formFields, formErrors = undefined, submission = 0) => {
+        var sectionStatus = {
+            invalid: 0,
+            exposureWorkerCountry: '',
+            exposureWorkerCity: '',
+            exposureWorkerFacility: '',
+            exposureTravelCountry: ['','',''],
+            exposureTravelCity: ['','',''],
+            exposureTravelDeparture: ['','',''],
+            exposureContactSetting: '',
+            exposureContactId: ['','','','',''],
+            exposureContactFirstDate: ['','','','',''],
+            exposureContactLastDate: ['','','','',''],
+            exposureContactCountry: ''
+        }
+
+        return sectionStatus;
     }
 
 }
 const ValidationFunctions = {
 
+    /*
+        Checks if underlying conditions are valid
+        Returns object {status, message}
+        
+        Status is set to 
+        0 when conditions are valid,
+        1 when no conditions entered
+        2 when trimester has not been indicated
+        3 when trimester is not 1, 2, or 3
+
+        Message is empty string when conditions are valid, or set to corresponding status response
+    */
+    isUnderlyingConditionsInvalid: (underlyingConditions, underlyingConditionsWriteIn) => {
+        let result = {status: 0, message: ''};
+
+        if (underlyingConditions.length) {
+
+            // Look for trimester data
+            for (var i = 0; i < underlyingConditions.length; i++) {
+                if (underlyingConditions[i].includes("trimester")) {
+                    
+                    // Check if trimester has been provided
+                    if ( underlyingConditions[i].replace( /^\D+/g, '') ) {
+                        const trimester = parseInt(underlyingConditions[i].match(/\d/g).join(''), 10);
+
+                        if (trimester === 0 || trimester > 3) {
+                            result.status = 3;
+                            result.message = "Trimester must be 1, 2, or 3";
+                        }
+                    } else {
+                        result.status = 2;
+                        result.message = "Please indicate a trimester";
+                    }
+
+                }
+            }
+        } else {
+            // No underlying conditions checked
+            if (!underlyingConditionsWriteIn) {
+                result.status = 1;
+                result.message = "Please check off or write in any underlying conditions.";
+            }
+        }
+
+        return result;
+    },
     /*
         Checks if age is valid
         Returns object {status, message}
@@ -122,11 +272,9 @@ const ValidationFunctions = {
 
         Message is empty string when age is valid, or set to corresponding status response
     */
-    isAgeValid: (years, months, days) => {
+    isAgeInvalid: (years, months, days) => {
         let result = {status: 0, message: ''};
-        console.log(years)
-        console.log(months)
-        console.log(days)
+        
         // Check days
         if ( !years && !months && days) {
             if (days > 31) {

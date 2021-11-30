@@ -92,6 +92,7 @@ class ReportForm extends Component {
                 clinicalSymptoms: '',
                 clinicalSymptomsDate: '',
                 clinicalUnderlyingConditions: '',
+                clinicalUnderlyingConditionsPregnancy: '',
                 clinicalUnderlyingConditionsWriteIn: '',
                 clinicalAdmission: '',
                 clinicalAdmissionDate: '',
@@ -208,162 +209,212 @@ class ReportForm extends Component {
 
             this.setState({formErrors, formFields}, () => console.log(this.state));
         },
-        temp: e => {
-        const {id, value} = e.target;
-        let formErrors = this.state.formErrors;
-        let formFields = this.state.formFields;
+        section2: e => {
+            // Section2: Clinical Status
 
-        
-        
+            const {id, value} = e.target;
+            let formErrors = this.state.formErrors;
+            let formFields = this.state.formFields;
 
-        // Section2: Clinical Status
-        if (id === 'clinicalDateLabTest') {
-            let date = convertDate(value);
-            formFields.clinicalDateLabTest = date;
+            if (id === 'clinicalDateLabTest') {
+                let date = ValidationFunctions.convertDate(value);
+                formFields.clinicalDateLabTest = date;
+                formErrors.clinicalDateLabTest = Validate.section2(formFields).clinicalDateLabTest;
 
-            formErrors.clinicalDateLabTest = isFieldValid('date', value).message;
-        } else if (id === 'clinicalSymptomsNo' || id === 'clinicalSymptomsYes' || id === 'clinicalSymptomsUnknown') {
-            formFields.clinicalSymptoms = id.toLowerCase().replace('clinicalsymptoms','');
+            } else if (id === 'clinicalSymptomsNo' || id === 'clinicalSymptomsYes' || id === 'clinicalSymptomsUnknown') {
+                formFields.clinicalSymptoms = id.toLowerCase().replace('clinicalsymptoms','');
+    
+                if (formFields.clinicalSymptoms !== 'yes') {
+                    formErrors.clinicalSymptomsDate = '';
+                    formFields.clinicalSymptomsDate = '';
+                }
 
-            if (formFields.clinicalSymptoms !== 'yes') {
-                formErrors.clinicalSymptomsDate = '';
-                formFields.clinicalSymptomsDate = '';
-            }
-        } else if (id === 'clinicalSymptomsDate') {
-            let date = convertDate(value);
-            formFields.clinicalSymptomsDate = date;
+            } else if (id === 'clinicalSymptomsDate') {
+                let date = ValidationFunctions.convertDate(value);
+                formFields.clinicalSymptomsDate = date;
+                formErrors.clinicalSymptomsDate = Validate.section2(formFields).clinicalSymptomsDate;
 
-            formErrors.clinicalSymptomsDate = isFieldValid('date', value).message;
-        } else if (id.includes('clinicalUnderlyingConditions')) {
-            // Get value of sympton type
-            let conditionValue = id.replace('clinicalUnderlyingConditions','');
+            } else if (id.includes('clinicalUnderlyingConditions')) {
+                // Get value of sympton type
+                let conditionValue = id.replace('clinicalUnderlyingConditions','');
+    
+                // Get if any underlying conditions (radio button)
+                if (conditionValue === 'No' || conditionValue === 'Yes' || conditionValue === 'Unknown') {
+                    formFields.clinicalUnderlyingConditions = conditionValue.toLowerCase();
+                }
+                
+                // Checklist values
+                else {
+                    if (id !== 'clinicalUnderlyingConditionsWriteIn') {
+                        // Add/remove checked fields to clinicalUnderlyingConditionsCheckAll array
+                        if (e.target.checked) {
 
-            // Get if any underlying conditions (radio button)
-            if (conditionValue === 'No' || conditionValue === 'Yes' || conditionValue === 'Unknown') {
-                formFields.clinicalUnderlyingConditions = conditionValue.toLowerCase();
-            }
-            
-            // Checklist values
-            else {
-                if (id !== 'clinicalUnderlyingConditionsWriteIn') {
-                    // Add/remove checked fields to clinicalUnderlyingConditionsCheckAll array
-                    if (e.target.checked) {
-                        formFields.clinicalUnderlyingConditionsCheckAll.push(e.target.nextSibling.innerText);
+                            if (e.target.id === "clinicalUnderlyingConditionsPregnancy") {
+                                formFields.clinicalUnderlyingConditionsCheckAll.push(e.target.nextSibling.innerText + document.getElementsByClassName("pregnancy-trimester")[0].value + ")");
+                            } else {
+                                formFields.clinicalUnderlyingConditionsCheckAll.push(e.target.nextSibling.innerText);
+                            }
+                            
+                        } 
+                        // Trimester updates
+                        else if (e.target.className === 'pregnancy-trimester form-control') {
+
+                            if(e.target.previousSibling.firstChild.checked) {
+                                formFields.clinicalUnderlyingConditionsCheckAll = formFields.clinicalUnderlyingConditionsCheckAll.filter(el => !el.includes("trimester"));
+                                formFields.clinicalUnderlyingConditionsCheckAll.push(e.target.previousSibling.firstChild.nextSibling.innerText + e.target.value + ")");
+                            }
+
+                        } else {
+
+                            if (e.target.id === "clinicalUnderlyingConditionsPregnancy") {
+                                formFields.clinicalUnderlyingConditionsCheckAll = formFields.clinicalUnderlyingConditionsCheckAll.filter(el => !el.includes("trimester"));
+                            } else {
+                                formFields.clinicalUnderlyingConditionsCheckAll = formFields.clinicalUnderlyingConditionsCheckAll.filter(el => el !== e.target.nextSibling.innerText);
+                            }
+                            
+                        }
                     } else {
-                        formFields.clinicalUnderlyingConditionsCheckAll = formFields.clinicalUnderlyingConditionsCheckAll.filter(el => el !== e.target.nextSibling.innerText);
+                        formFields.clinicalUnderlyingConditionsWriteIn = value;
                     }
-                } else {
-                    formFields.clinicalUnderlyingConditionsWriteIn = value;
-                }
-            }
-        } else if (id.includes('clinicalAdmission')) {
-            // Get value of admission type
-            let admissionValue = id.replace('clinicalAdmission','');
-
-            // Get if admitted to hospital (radio button)
-            if (admissionValue === 'No' || admissionValue === 'Yes' || admissionValue === 'Unknown') {
-                formFields.clinicalAdmission = admissionValue.toLowerCase();
-            }
-            
-            // Hospital Admission Information
-            if (formFields.clinicalAdmission === 'yes') {
-
-                if (admissionValue === 'Date') {
-                    let date = convertDate(value);
-                    formFields.clinicalAdmissionDate = date;
-
-                    formErrors.clinicalAdmissionDate = isFieldValid('date', value).message;
-                } else if (admissionValue.includes('ICU')) {
-                    formFields.clinicalAdmissionICU = admissionValue.replace('ICU', '').toLowerCase();
-                } else if (admissionValue.includes('Ventilation')) {
-                    formFields.clinicalAdmissionVentilation = admissionValue.replace('Ventilation', '').toLowerCase();
-                } else if (admissionValue.includes('Oxygenation')) {
-                    formFields.clinicalAdmissionOxygenation = admissionValue.replace('Oxygenation', '').toLowerCase();
                 }
 
+                const conditionsResult = Validate.section2(formFields);
+                formErrors.clinicalUnderlyingConditions = conditionsResult.clinicalUnderlyingConditions;
+                formErrors.clinicalUnderlyingConditionsWriteIn = conditionsResult.clinicalUnderlyingConditionsWriteIn;
+                formErrors.clinicalUnderlyingConditionsPregnancy = conditionsResult.clinicalUnderlyingConditionsPregnancy;
+
+            } else if (id.includes('clinicalAdmission')) {
+                // Get value of admission type
+                let admissionValue = id.replace('clinicalAdmission','');
+    
+                // Get if admitted to hospital (radio button)
+                if (admissionValue === 'No' || admissionValue === 'Yes' || admissionValue === 'Unknown') {
+                    formFields.clinicalAdmission = admissionValue.toLowerCase();
+                }
+                
+                // Hospital Admission Information
+                if (formFields.clinicalAdmission === 'yes') {
+    
+                    if (admissionValue === 'Date') {
+                        let date = ValidationFunctions.convertDate(value);
+                        formFields.clinicalSymptomsDate = date;
+                        formErrors.clinicalAdmissionDate = Validate.section2(formFields).clinicalAdmissionDate;
+                        
+                    } else if (admissionValue.includes('ICU')) {
+                        formFields.clinicalAdmissionICU = admissionValue.replace('ICU', '').toLowerCase();
+
+                    } else if (admissionValue.includes('Ventilation')) {
+                        formFields.clinicalAdmissionVentilation = admissionValue.replace('Ventilation', '').toLowerCase();
+
+                    } else if (admissionValue.includes('Oxygenation')) {
+                        formFields.clinicalAdmissionOxygenation = admissionValue.replace('Oxygenation', '').toLowerCase();
+
+                    }
+    
+                }
+    
+                // Not part of clinical admission followup reponse
+                if (admissionValue === 'IsolationNo' || admissionValue === 'IsolationYes' || admissionValue === 'IsolationUnknown') {    
+                    formFields.clinicalAdmissionIsolation = admissionValue.replace('Isolation', '').toLowerCase();
+
+                } else if (admissionValue === 'IsolationDate') {
+                    let date = ValidationFunctions.convertDate(value);
+                    formFields.clinicalAdmissionIsolationDate = date;
+                    formErrors.clinicalAdmissionIsolationDate = Validate.section2(formFields).clinicalAdmissionIsolationDate;
+
+                }
             }
 
-            // Not part of clinical admission followup reponse
-            if (admissionValue === 'IsolationNo' || admissionValue === 'IsolationYes' || admissionValue === 'IsolationUnknown') {    
-                formFields.clinicalAdmissionIsolation = admissionValue.replace('Isolation', '').toLowerCase();
-            } else if (admissionValue === 'IsolationDate') {
+            this.setState({formErrors, formFields}, () => console.log(this.state));
+
+        },
+        section3: e => {
+            // Section3 : Exposure risk in the 14 days prior to symptom onset
+            const {id, value} = e.target;
+            let formErrors = this.state.formErrors;
+            let formFields = this.state.formFields;
+
+            if (id === 'exposureWorkerNo' || id === 'exposureWorkerYes' || id === 'exposureWorkerUnknown') {
+                formFields.exposureWorker = id.toLowerCase().replace('exposureworker','');
+    
+            } else if (id === 'exposureWorkerCountry') {
+                formFields.exposureWorkerCountry = value;
+                formErrors.exposureWorkerCountry = isFieldValid(id, value).message;
+            } else if (id === 'exposureWorkerCity') {
+                formFields.exposureWorkerCity = value;
+                formErrors.exposureWorkerCity = isFieldValid(id, value).message;
+    
+            } else if (id === 'exposureWorkerFacility') {
+                formFields.exposureWorkerFacility = value;
+                formErrors.exposureWorkerFacility = isFieldValid(id, value).message;
+    
+    
+            } else if (id === 'exposureTravelNo' || id === 'exposureTravelYes' || id === 'exposureTravelUnknown') {
+                formFields.exposureTravel = id.replace('exposureTravel','').toLowerCase();
+                
+            } else if (id.includes('exposureTravelCountry')) {
+                let index = parseInt( id.replace('exposureTravelCountry','') ) - 1;
+                formFields.exposureTravelCountry[index] = value;
+                formErrors.exposureTravelCountry[index] = isFieldValid('exposureTravelCountry', value).message;
+    
+            } else if (id.includes('exposureTravelCity')) {
+                let index = parseInt( id.replace('exposureTravelCity','') ) - 1;
+                formFields.exposureTravelCity[index] = value;
+                formErrors.exposureTravelCity[index] = isFieldValid('exposureTravelCity', value).message;
+    
+            } else if (id.includes('exposureTravelDeparture')) {
+                let index = parseInt( id.replace('exposureTravelDeparture','') ) - 1;
                 let date = convertDate(value);
-                formFields.clinicalAdmissionIsolationDate = date;
-
-                formErrors.clinicalAdmissionIsolationDate = isFieldValid('date', value).message;
+    
+                formFields.exposureTravelDeparture[index] = date;
+                formErrors.exposureTravelDeparture[index] = isFieldValid('date', value).message;
+    
+            } else if (id === 'exposureVisitedFacilityNo' || id === 'exposureVisitedFacilityYes' || 
+                id === 'exposureVisitedFacilityUnknown') {
+    
+                    formFields.exposureVisitedFacility = id.replace('exposureVisitedFacility','').toLowerCase();
+    
+            } else if (id === 'exposureContactNo' || id === 'exposureContactYes' || id === 'exposureContactUnknown') {
+                formFields.exposureContact = id.replace('exposureContact','').toLowerCase();
+    
+            } else if (id === 'exposureContactSetting') {
+                formFields.exposureContactSetting = value;
+                formErrors.exposureContactSetting = isFieldValid('exposureContactSetting', value).message;
+    
+            } else if (id.includes('exposureContactId')) {
+                let index = parseInt( id.replace('exposureContactId','') ) - 1;
+                formFields.exposureContactId[index] = value;
+    
+            } else if (id.includes('exposureContactFirstDate')) {
+                let index = parseInt( id.replace('exposureContactFirstDate','') ) - 1;
+                let date = convertDate(value);
+                formFields.exposureContactFirstDate[index] = date;
+                formErrors.exposureContactFirstDate[index] = isFieldValid('date', value).message;
+    
+            } else if (id.includes('exposureContactLastDate')) {
+                let index = parseInt( id.replace('exposureContactLastDate','') ) - 1;
+                let date = convertDate(value);
+                formFields.exposureContactLastDate[index] = date;
+                formErrors.exposureContactLastDate[index] = isFieldValid('date', value).message;
+    
+            } else if (id === 'exposureContactCountry') {
+                formFields.exposureContactCountry = value;
+                formErrors.exposureContactCountry = isFieldValid(id, value).message;
             }
-        }
 
-        // Section3 : Exposure risk in the 14 days prior to symptom onset
-        else if (id === 'exposureWorkerNo' || id === 'exposureWorkerYes' || id === 'exposureWorkerUnknown') {
-            formFields.exposureWorker = id.toLowerCase().replace('exposureworker','');
-
-        } else if (id === 'exposureWorkerCountry') {
-            formFields.exposureWorkerCountry = value;
-            formErrors.exposureWorkerCountry = isFieldValid(id, value).message;
-        } else if (id === 'exposureWorkerCity') {
-            formFields.exposureWorkerCity = value;
-            formErrors.exposureWorkerCity = isFieldValid(id, value).message;
-
-        } else if (id === 'exposureWorkerFacility') {
-            formFields.exposureWorkerFacility = value;
-            formErrors.exposureWorkerFacility = isFieldValid(id, value).message;
+            this.setState({formErrors, formFields}, () => console.log(this.state));
+        
+        },
+        temp: e => {
+            const {id, value} = e.target;
+            let formErrors = this.state.formErrors;
+            let formFields = this.state.formFields;
 
 
-        } else if (id === 'exposureTravelNo' || id === 'exposureTravelYes' || id === 'exposureTravelUnknown') {
-            formFields.exposureTravel = id.replace('exposureTravel','').toLowerCase();
-            
-        } else if (id.includes('exposureTravelCountry')) {
-            let index = parseInt( id.replace('exposureTravelCountry','') ) - 1;
-            formFields.exposureTravelCountry[index] = value;
-            formErrors.exposureTravelCountry[index] = isFieldValid('exposureTravelCountry', value).message;
-
-        } else if (id.includes('exposureTravelCity')) {
-            let index = parseInt( id.replace('exposureTravelCity','') ) - 1;
-            formFields.exposureTravelCity[index] = value;
-            formErrors.exposureTravelCity[index] = isFieldValid('exposureTravelCity', value).message;
-
-        } else if (id.includes('exposureTravelDeparture')) {
-            let index = parseInt( id.replace('exposureTravelDeparture','') ) - 1;
-            let date = convertDate(value);
-
-            formFields.exposureTravelDeparture[index] = date;
-            formErrors.exposureTravelDeparture[index] = isFieldValid('date', value).message;
-
-        } else if (id === 'exposureVisitedFacilityNo' || id === 'exposureVisitedFacilityYes' || 
-            id === 'exposureVisitedFacilityUnknown') {
-
-                formFields.exposureVisitedFacility = id.replace('exposureVisitedFacility','').toLowerCase();
-
-        } else if (id === 'exposureContactNo' || id === 'exposureContactYes' || id === 'exposureContactUnknown') {
-            formFields.exposureContact = id.replace('exposureContact','').toLowerCase();
-
-        } else if (id === 'exposureContactSetting') {
-            formFields.exposureContactSetting = value;
-            formErrors.exposureContactSetting = isFieldValid('exposureContactSetting', value).message;
-
-        } else if (id.includes('exposureContactId')) {
-            let index = parseInt( id.replace('exposureContactId','') ) - 1;
-            formFields.exposureContactId[index] = value;
-
-        } else if (id.includes('exposureContactFirstDate')) {
-            let index = parseInt( id.replace('exposureContactFirstDate','') ) - 1;
-            let date = convertDate(value);
-            formFields.exposureContactFirstDate[index] = date;
-            formErrors.exposureContactFirstDate[index] = isFieldValid('date', value).message;
-
-        } else if (id.includes('exposureContactLastDate')) {
-            let index = parseInt( id.replace('exposureContactLastDate','') ) - 1;
-            let date = convertDate(value);
-            formFields.exposureContactLastDate[index] = date;
-            formErrors.exposureContactLastDate[index] = isFieldValid('date', value).message;
-
-        } else if (id === 'exposureContactCountry') {
-            formFields.exposureContactCountry = value;
-            formErrors.exposureContactCountry = isFieldValid(id, value).message;
-        }
+        
+        
         // Section4 : Outcome : complete and re-sent the full form as...
-        else if (id === 'outcomeDateResubmission') {
+        if (id === 'outcomeDateResubmission') {
             let date = convertDate(value);
             formFields.outcomeDateResubmission = date;
             formErrors.outcomeDateResubmission = isFieldValid('date', value).message;
@@ -448,9 +499,10 @@ class ReportForm extends Component {
             <form onSubmit={this.handleSubmit}>
                 <Section0 handleChange={this.handleChange.section0} formFields={this.state.formFields} formErrors={this.state.formErrors} />
                 <Section1 handleChange={this.handleChange.section1} formFields={this.state.formFields} formErrors={this.state.formErrors} />
+                <Section2 handleChange={this.handleChange.section2} formFields={this.state.formFields} formErrors={this.state.formErrors} />
+                <Section3 handleChange={this.handleChange.section3} formFields={this.state.formFields} formErrors={this.state.formErrors} />
                 {/* 
-                <Section2 handleChange={this.handleChange.temp} formFields={this.state.formFields} formErrors={this.state.formErrors} />
-                <Section3 handleChange={this.handleChange.temp} formFields={this.state.formFields} formErrors={this.state.formErrors} />
+                
                 <Section4 handleChange={this.handleChange.temp} formFields={this.state.formFields} formErrors={this.state.formErrors} /> */}
                 <Button variant="primary" type="submit">
                     Submit
