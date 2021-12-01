@@ -160,6 +160,333 @@ class ReportForm extends Component {
         // Note: Remember to Add clinicalUnderlyingConditionsWriteIn to clinicalUnderlyingConditionsCheckAll array for JSON object
     }
 
+    /*
+        Constructs the data object that is passed to the HAPI FHIR server in the POST request
+        Returns the constructed data object
+    */
+    constructDataObject() {
+        const allClinicalUnderlyingConditions = [...this.state.formFields.clinicalUnderlyingConditionsCheckAll];
+        allClinicalUnderlyingConditions.push(...this.state.formFields.clinicalUnderlyingConditionsWriteIn);
+
+        const priorTravelHistoryDestinations = [];
+        for (let i = 0; i < 3; i++) {
+            if (this.state.formFields.exposureTravelCountry[i] === '' && this.state.formFields.exposureTravelCity[i] === '' && this.state.formFields.exposureTravelDeparture[i] === '') {
+                continue;
+            }
+            priorTravelHistoryDestinations.push(
+                {
+                    "country": this.state.formFields.exposureTravelCountry[i],
+                    "city": this.state.formFields.exposureTravelCity[i],
+                    "departure_date": this.state.formFields.exposureTravelDeparture[i]
+                }
+            );
+        }
+
+        const priorConfirmedContactInfo = [];
+        for (let i = 0; i < 5; i++) {
+            if (this.state.formFields.exposureContactId[i] === '' && this.state.formFields.exposureContactFirstDate[i] === '' && this.state.formFields.exposureContactLastDate[i] === '') {
+                continue;
+            }
+            priorConfirmedContactInfo.push(
+                {
+                    "contact_id": this.state.formFields.exposureContactId[i], 
+                    "first_date_contact": this.state.formFields.exposureContactFirstDate[i], 
+                    "last_date_contact": this.state.formFields.exposureContactLastDate[i]
+                }
+            );
+        }
+
+        let outcomeHealthText = this.state.formFields.outcomeHealth;
+        if (outcomeHealthText === "other") {
+            outcomeHealthText = this.state.formFields.outcomeHealthOtherWriteIn;
+        }
+
+        const dataObj = {
+            "preliminary_info": {
+                "description": "Preliminary information",
+                "questions_to_responses": [
+                    {
+                        "id": "Q_35843",
+                        "question": "Date of Reporting to National Health Authority (DD / MM / YYYY)", 
+                        "response": this.state.formFields.reportingDate
+                    },
+                    {
+                        "id": "Q_35872",
+                        "question": "Reporting Country", 
+                        "response": this.state.formFields.reportingCountry
+                    },
+                    {
+                        "id": "Q_35849",
+                        "question": "Why Tested for COVID-19",
+                        "response": this.state.formFields.whyTested,
+                        "followup_response": [
+                            {
+                                "id": "LI_35963",
+                                "question": "None of the above (explain)",
+                                "response": this.state.formFields.whyTestedWriteIn
+                            }
+                        ]
+                    }
+                ]
+            },
+            "patient_info": {
+                "description": "Patient information",
+                "questions_to_responses": [
+                    {
+                        "id": "Q_37326",
+                        "question": "Unique Case Identifier (used in country)", 
+                        "response": this.state.formFields.uniqueCaseId
+                    },
+                    {
+                        "id": "Q_35972",
+                        "question": "Age", 
+                        "response": {
+                            "days": this.state.formFields.patientAgeDays,
+                            "months": this.state.formFields.patientAgeMonths,
+                            "years": this.state.formFields.patientAgeYears
+                        }
+                    },
+                    {
+                        "id": "Q_35978",
+                        "question": "Sex at Birth", 
+                        "response": this.state.formFields.patientSex
+                    },
+                    {
+                        "id": "Q_35932",
+                        "question": "Place Where the Case Was Diagnosed (Country)",
+                        "response": this.state.formFields.patientDiagnosisCountry,
+                        "followup_response": [
+                            {
+                                "id": "Q_35935",
+                                "question": "Admin Level 1 (Province)",
+                                "response": this.state.formFields.patientDiagnosisProvince
+                            }
+                        ]
+                    },
+                    {
+                        "id": "Q_35981",
+                        "question": "Case Usual Place of Residency (Country)",
+                        "response": this.state.formFields.patientResidencyCountry
+                    }
+                ]
+            },
+            "clinical_status": {
+                "description": "Clinical status",
+                "questions_to_responses": [
+                    {
+                        "id": "Q_35943",
+                        "question": "Date of First Laboratory Confirmation Test (DD / MM / YYYY)", 
+                        "response": this.state.formFields.clinicalDateLabTest
+                    },
+                    {
+                        "id": "Q_35995",
+                        "question": "Symptoms or Signs at Time of Specimen Collection that Resulted in First Laboratory Confirmation", 
+                        "response": this.state.formFields.clinicalSymptoms,
+                        "followup_response": [
+                            {
+                                "id": "Q_37429",
+                                "question": "Specify Date of Onset of Symptoms (DD / MM / YYYY)",
+                                "response": this.state.formFields.clinicalSymptomsDate
+                            }
+                        ]
+                    },
+                    {
+                        "id": "Q_38610",
+                        "question": "Underlying Conditions and Comorbidity",
+                        "response": this.state.formFields.clinicalUnderlyingConditions,
+                        "followup_response": [
+                            {
+                                "id": "Q_35960",
+                                "response": allClinicalUnderlyingConditions
+                            }
+                        ]
+                    },
+                    {
+                        "id": "Q_36015",
+                        "question": "Admission to Hospital",
+                        "response": this.state.formFields.clinicalAdmission,
+                        "followup_response": [
+                            {
+                                "id": "Q_39750",
+                                "question": "Specify Date of First Admission (DD / MM / YYYY)",
+                                "response": this.state.formFields.clinicalAdmissionDate
+                            },
+                            {
+                                "id": "Q_36845",
+                                "question": "Did the Case Receive Care in an Intensive Care Unit (ICU)?",
+                                "response": this.state.formFields.clinicalAdmissionICU
+                            },
+                            {
+                                "id": "Q_36862",
+                                "question": "Did the Case Receive Ventilation?",
+                                "response": this.state.formFields.clinicalAdmissionVentilation
+                            },
+                            {
+                                "id": "Q_36032",
+                                "question": "Did the Case Receive Extracorporeal Membrane Oxygenation?",
+                                "response": this.state.formFields.clinicalAdmissionOxygenation
+                            }
+                        ]
+                    },
+                    {
+                        "id": "Q_36839",
+                        "question": "Is Case in Isolation with Infection Control Practice in Place?",
+                        "response": this.state.formFields.clinicalAdmissionIsolation,
+                        "followup_response": [
+                            {
+                                "id": "Q_41854",
+                                "question": "Specify Date of Isolation (DD / MM / YYYY)",
+                                "response": this.state.formFields.clinicalAdmissionIsolationDate
+                            }
+                        ]
+                    }
+                ]
+            },
+            "exposure_risk": {
+                "description": "Exposure risk in the 14 days prior to symptom onset (prior to testing if asymptomatic)",
+                "questions_to_responses": [
+                    {
+                        "id": "Q_36919",
+                        "question": "Is Case a Health Care Worker (any job in a health care setting)?", 
+                        "response": this.state.formFields.exposureWorker,
+                        "followup_response": [
+                            {
+                                "id": "Q_37294",
+                                "question": "Country",
+                                "response": this.state.formFields.exposureWorkerCountry
+                            }, 
+                            {
+                                "id": "Q_36891",
+                                "question": "City",
+                                "response": this.state.formFields.exposureWorkerCity
+                            }, 
+                            {
+                                "id": "Q_36928",
+                                "question": "Name of Facility",
+                                "response": this.state.formFields.exposureWorkerFacility
+                            }
+                        ]
+                    }, 
+                    {
+                        "id": "Q_36945",
+                        "question": "Has the Case Travelled in the 14 Days Prior to Symptom Onset?", 
+                        "response": this.state.formFields.exposureTravel,
+                        "followup_response": [
+                            {
+                                "id": "S_36914", 
+                                "question": "Prior Travel History (for multiple destinations, repeat this section up to 10 times)", 
+                                "response": priorTravelHistoryDestinations
+                            }
+                        ]
+                    }, 
+                    {
+                        "id": "Q_36916",
+                        "question": "Has Case Visited Any Health Care Facility in the 14 Days Prior to Symptom Onset?", 
+                        "response": this.state.formFields.exposureVisitedFacility
+                    }, 
+                    {
+                        "id": "Q_36997",
+                        "question": "Has Case Had Contact With a Confirmed Case in the 14 Days Prior to Symptom Onset?", 
+                        "response": this.state.formFields.exposureContact, 
+                        "followup_response": [
+                            {
+                                "id": "Q_37375",
+                                "question": "Please Explain Contact Setting", 
+                                "response": this.state.formFields.exposureContactSetting
+                            }, 
+                            {
+                                "id": "S_37037", 
+                                "question": "Prior Confirmed Contact Information (for multiple contacts, repeat this section up to 100 times)", 
+                                "response": priorConfirmedContactInfo
+                            }, 
+                            {
+                                "id": "Q_36931", 
+                                "question": "Most Likely Country of Exposure", 
+                                "response": this.state.formFields.exposureContactCountry
+                            }
+                        ]
+                    }
+                ]
+            },
+            "outcome": {
+                "description": "Outcome: complete and re-sent the full form as soon as outcome of disease is known or after 30 days after initial report",
+                "questions_to_responses": [
+                    {
+                        "id": "Q_37114",
+                        "question": "Date of Resubmission of This Report (DD / MM / YYYY)", 
+                        "response": this.state.formFields.outcomeDateResubmission
+                    }, 
+                    {
+                        "id": "Q_36934", 
+                        "question": "If Case was Asymptomatic at Time of Specimen Collection Resulting in First Laboratory Confirmation, Did the Case Develop Any Symptoms or Signs at Any Time Prior to Discharge or Death?", 
+                        "response": this.state.formFields.outcomeDevelop, 
+                        "followup_response": [
+                            {
+                                "id": "Q_37128", 
+                                "question": "Specify Date of Onset of Symptoms / Signs of Illness (DD / MM / YYYY)", 
+                                response: this.state.formFields.outcomeDevelopYesDate
+                            }
+                        ]
+                    }, 
+                    {
+                        "id": "Q_36957", 
+                        "question": "Admission to Hospital (may have been previously reported)", 
+                        "response": this.state.formFields.outcomeAdmission, 
+                        "followup_response": [
+                            {
+                                "id": "Q_37403", 
+                                "question": "Specify Date of First Admission (DD / MM / YYYY)", 
+                                "response": this.state.formFields.outcomeDateAdmission
+                            }, 
+                            {
+                                "id": "Q_37229", 
+                                "question": "Did the Case Receive Care in an Intensive Care Unit (ICU)?", 
+                                "response": this.state.formFields.outcomeAdmissionICU
+                            }, 
+                            {
+                                "id": "Q_37372", 
+                                "question": "Did the Case Receive Ventilation?", 
+                                "response": this.state.formFields.outcomeAdmissionVentilation
+                            }, 
+                            {
+                                "id": "Q_37389", 
+                                "question": "Did the Case Receive Extracorporeal Membrane Oxygenation?", 
+                                "response": this.state.formFields.outcomeAdmissionOxygenation
+                            }
+                        ]
+                    },
+                    {
+                        "id": "Q_37025", 
+                        "question": "Health Outcome", 
+                        "response": outcomeHealthText
+                    }, 
+                    {
+                        "id": "Q_37412", 
+                        "question": "Date of Release or Death (DD / MM / YYYY)", 
+                        "response": this.state.formFields.outcomeDateRelease
+                    },
+                    {
+                        "id": "Q_37420", 
+                        "question": "Specify Date of Last Laboratory Test (DD / MM / YYYY)", 
+                        "response": this.state.formFields.outcomeDateTest
+                    }, 
+                    {
+                        "id": "Q_39438", 
+                        "question": "Results of Last Test", 
+                        "response": this.state.formFields.outcomeTestResult
+                    }, 
+                    {
+                        "id": "Q_39564", 
+                        "question": "Total Number of Contacts Followed for this Case", 
+                        "response": this.state.formFields.outcomeTotalContacts
+                    }
+                ]
+            }
+        }
+
+        return dataObj;
+    }
+
     handleChange = {
 
         section0: e => {
