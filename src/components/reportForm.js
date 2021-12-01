@@ -8,6 +8,8 @@ import {Section4} from './section4.js';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import { Validate, ValidationFunctions } from '../Validation.js';
+import axios from 'axios';
+import Alert from 'react-bootstrap/Alert'
 
 class ReportForm extends Component {
 
@@ -123,7 +125,9 @@ class ReportForm extends Component {
                 outcomeTotalContacts: '',
                 missingSections: '',
                 outcomeTotalContacts: ''
-            }
+            },
+            dataSubmitSuccessful: false,
+            afterSubmitMsg: ''
         }
     }
 
@@ -155,9 +159,39 @@ class ReportForm extends Component {
         // If valid, data ready to build JSON object
         if (!s0valid.invalid && !s1valid.invalid && !s2valid.invalid && !s3valid.invalid && !s4valid.invalid) {
             console.log("all data valid");
-        }
 
-        // Note: Remember to Add clinicalUnderlyingConditionsWriteIn to clinicalUnderlyingConditionsCheckAll array for JSON object
+            const data = this.constructDataObject();
+            console.log(data);
+            const base64EncodedData = btoa(JSON.stringify(data));
+            const headers = {
+                "Content-Type": "application/json"
+            };
+
+            // POST request to /DocumentReference endpoint of HAPI FHIR server
+            axios.post("http://hapi.fhir.org/baseR4/DocumentReference", {
+                "resourceType": "DocumentReference",
+                "content": [
+                    {
+                        "attachment": {
+                            "data": base64EncodedData
+                        }
+                    }
+                ]
+            }, {
+                "headers": headers
+            })
+            .then((res) => {
+                if (res.status === 201) {
+                    console.log(res);
+                    console.log("Data successfully submitted to HAPI FHIR server");
+                    this.setState({afterSubmitMsg: 'Data was successfully submitted to the server.', dataSubmitSuccessful: true}, () => console.log(this.state));
+                }
+            })
+            .catch(() => {
+                console.log("Data not submitted to HAPI FHIR server");
+                this.setState({afterSubmitMsg: 'Data could not be submitted to the server. Please try submitting again.', dataSubmitSuccessful: false}, () => console.log(this.state));
+            });
+        }
     }
 
     /*
@@ -166,7 +200,7 @@ class ReportForm extends Component {
     */
     constructDataObject() {
         const allClinicalUnderlyingConditions = [...this.state.formFields.clinicalUnderlyingConditionsCheckAll];
-        allClinicalUnderlyingConditions.push(...this.state.formFields.clinicalUnderlyingConditionsWriteIn);
+        allClinicalUnderlyingConditions.push(this.state.formFields.clinicalUnderlyingConditionsWriteIn);
 
         const priorTravelHistoryDestinations = [];
         for (let i = 0; i < 3; i++) {
@@ -859,6 +893,11 @@ class ReportForm extends Component {
                 <Button variant="primary" type="submit">
                     Submit
                 </Button>
+                {this.state.afterSubmitMsg.length > 0 && (
+                    <Alert variant={this.state.dataSubmitSuccessful ? "success": "danger"}>
+                        {this.state.afterSubmitMsg}
+                    </Alert>
+                )}
             </form>
         );
     }
