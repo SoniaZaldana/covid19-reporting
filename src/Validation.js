@@ -630,7 +630,7 @@ const ValidationFunctions = {
         if (!/^[a-zA-Z]+$/.test(city)) {
             result.status = 1;
             result.message = 'City must only contain letters';
-        } else if (city.length < 2) {
+        } else if (city.length < 3) {
             result.status = 2;
             result.message = 'City must have at least 3 letters';
         }
@@ -653,7 +653,7 @@ const ValidationFunctions = {
     isFacilityInvalid: facility => {
         let result = {status: 0, message: ''};
 
-        if (facility.length < 2) {
+        if (facility.length < 3) {
             result.status = 1;
             result.message = 'Facility must have at least 3 letters';
         }
