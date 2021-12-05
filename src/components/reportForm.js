@@ -8,14 +8,14 @@ import {Section4} from './section4.js';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import { Validate, ValidationFunctions } from '../Validation.js';
-import axios from 'axios';
-import Alert from 'react-bootstrap/Alert'
+import Alert from 'react-bootstrap/Alert';
+import {postRequest} from './utils.js';
 
 class ReportForm extends Component {
 
     constructor() {
         super();
-    
+
         this.state = {
             formFields: {
                 reportingDate: '',
@@ -162,35 +162,7 @@ class ReportForm extends Component {
 
             const data = this.constructDataObject();
             console.log(data);
-            const base64EncodedData = btoa(JSON.stringify(data));
-            const headers = {
-                "Content-Type": "application/json"
-            };
-
-            // POST request to /DocumentReference endpoint of HAPI FHIR server
-            axios.post("http://hapi.fhir.org/baseR4/DocumentReference", {
-                "resourceType": "DocumentReference",
-                "content": [
-                    {
-                        "attachment": {
-                            "data": base64EncodedData
-                        }
-                    }
-                ]
-            }, {
-                "headers": headers
-            })
-            .then((res) => {
-                if (res.status === 201) {
-                    console.log(res);
-                    console.log("Data successfully submitted to HAPI FHIR server");
-                    this.setState({afterSubmitMsg: 'Data was successfully submitted to the server.', dataSubmitSuccessful: true}, () => console.log(this.state));
-                }
-            })
-            .catch(() => {
-                console.log("Data not submitted to HAPI FHIR server");
-                this.setState({afterSubmitMsg: 'Data could not be submitted to the server. Please try submitting again.', dataSubmitSuccessful: false}, () => console.log(this.state));
-            });
+            postRequest(data, this.setState.bind(this));
         }
     }
 
@@ -223,8 +195,8 @@ class ReportForm extends Component {
             }
             priorConfirmedContactInfo.push(
                 {
-                    "contact_id": this.state.formFields.exposureContactId[i], 
-                    "first_date_contact": this.state.formFields.exposureContactFirstDate[i], 
+                    "contact_id": this.state.formFields.exposureContactId[i],
+                    "first_date_contact": this.state.formFields.exposureContactFirstDate[i],
                     "last_date_contact": this.state.formFields.exposureContactLastDate[i]
                 }
             );
@@ -241,12 +213,12 @@ class ReportForm extends Component {
                 "questions_to_responses": [
                     {
                         "id": "Q_35843",
-                        "question": "Date of Reporting to National Health Authority (DD / MM / YYYY)", 
+                        "question": "Date of Reporting to National Health Authority (DD / MM / YYYY)",
                         "response": this.state.formFields.reportingDate
                     },
                     {
                         "id": "Q_35872",
-                        "question": "Reporting Country", 
+                        "question": "Reporting Country",
                         "response": this.state.formFields.reportingCountry
                     },
                     {
@@ -268,12 +240,12 @@ class ReportForm extends Component {
                 "questions_to_responses": [
                     {
                         "id": "Q_37326",
-                        "question": "Unique Case Identifier (used in country)", 
+                        "question": "Unique Case Identifier (used in country)",
                         "response": this.state.formFields.uniqueCaseId
                     },
                     {
                         "id": "Q_35972",
-                        "question": "Age", 
+                        "question": "Age",
                         "response": {
                             "days": this.state.formFields.patientAgeDays,
                             "months": this.state.formFields.patientAgeMonths,
@@ -282,7 +254,7 @@ class ReportForm extends Component {
                     },
                     {
                         "id": "Q_35978",
-                        "question": "Sex at Birth", 
+                        "question": "Sex at Birth",
                         "response": this.state.formFields.patientSex
                     },
                     {
@@ -309,12 +281,12 @@ class ReportForm extends Component {
                 "questions_to_responses": [
                     {
                         "id": "Q_35943",
-                        "question": "Date of First Laboratory Confirmation Test (DD / MM / YYYY)", 
+                        "question": "Date of First Laboratory Confirmation Test (DD / MM / YYYY)",
                         "response": this.state.formFields.clinicalDateLabTest
                     },
                     {
                         "id": "Q_35995",
-                        "question": "Symptoms or Signs at Time of Specimen Collection that Resulted in First Laboratory Confirmation", 
+                        "question": "Symptoms or Signs at Time of Specimen Collection that Resulted in First Laboratory Confirmation",
                         "response": this.state.formFields.clinicalSymptoms,
                         "followup_response": [
                             {
@@ -381,61 +353,61 @@ class ReportForm extends Component {
                 "questions_to_responses": [
                     {
                         "id": "Q_36919",
-                        "question": "Is Case a Health Care Worker (any job in a health care setting)?", 
+                        "question": "Is Case a Health Care Worker (any job in a health care setting)?",
                         "response": this.state.formFields.exposureWorker,
                         "followup_response": [
                             {
                                 "id": "Q_37294",
                                 "question": "Country",
                                 "response": this.state.formFields.exposureWorkerCountry
-                            }, 
+                            },
                             {
                                 "id": "Q_36891",
                                 "question": "City",
                                 "response": this.state.formFields.exposureWorkerCity
-                            }, 
+                            },
                             {
                                 "id": "Q_36928",
                                 "question": "Name of Facility",
                                 "response": this.state.formFields.exposureWorkerFacility
                             }
                         ]
-                    }, 
+                    },
                     {
                         "id": "Q_36945",
-                        "question": "Has the Case Travelled in the 14 Days Prior to Symptom Onset?", 
+                        "question": "Has the Case Travelled in the 14 Days Prior to Symptom Onset?",
                         "response": this.state.formFields.exposureTravel,
                         "followup_response": [
                             {
-                                "id": "S_36914", 
-                                "question": "Prior Travel History (for multiple destinations, repeat this section up to 10 times)", 
+                                "id": "S_36914",
+                                "question": "Prior Travel History (for multiple destinations, repeat this section up to 10 times)",
                                 "response": priorTravelHistoryDestinations
                             }
                         ]
-                    }, 
+                    },
                     {
                         "id": "Q_36916",
-                        "question": "Has Case Visited Any Health Care Facility in the 14 Days Prior to Symptom Onset?", 
+                        "question": "Has Case Visited Any Health Care Facility in the 14 Days Prior to Symptom Onset?",
                         "response": this.state.formFields.exposureVisitedFacility
-                    }, 
+                    },
                     {
                         "id": "Q_36997",
-                        "question": "Has Case Had Contact With a Confirmed Case in the 14 Days Prior to Symptom Onset?", 
-                        "response": this.state.formFields.exposureContact, 
+                        "question": "Has Case Had Contact With a Confirmed Case in the 14 Days Prior to Symptom Onset?",
+                        "response": this.state.formFields.exposureContact,
                         "followup_response": [
                             {
                                 "id": "Q_37375",
-                                "question": "Please Explain Contact Setting", 
+                                "question": "Please Explain Contact Setting",
                                 "response": this.state.formFields.exposureContactSetting
-                            }, 
+                            },
                             {
-                                "id": "S_37037", 
-                                "question": "Prior Confirmed Contact Information (for multiple contacts, repeat this section up to 100 times)", 
+                                "id": "S_37037",
+                                "question": "Prior Confirmed Contact Information (for multiple contacts, repeat this section up to 100 times)",
                                 "response": priorConfirmedContactInfo
-                            }, 
+                            },
                             {
-                                "id": "Q_36931", 
-                                "question": "Most Likely Country of Exposure", 
+                                "id": "Q_36931",
+                                "question": "Most Likely Country of Exposure",
                                 "response": this.state.formFields.exposureContactCountry
                             }
                         ]
@@ -447,71 +419,71 @@ class ReportForm extends Component {
                 "questions_to_responses": [
                     {
                         "id": "Q_37114",
-                        "question": "Date of Resubmission of This Report (DD / MM / YYYY)", 
+                        "question": "Date of Resubmission of This Report (DD / MM / YYYY)",
                         "response": this.state.formFields.outcomeDateResubmission
-                    }, 
+                    },
                     {
-                        "id": "Q_36934", 
-                        "question": "If Case was Asymptomatic at Time of Specimen Collection Resulting in First Laboratory Confirmation, Did the Case Develop Any Symptoms or Signs at Any Time Prior to Discharge or Death?", 
-                        "response": this.state.formFields.outcomeDevelop, 
+                        "id": "Q_36934",
+                        "question": "If Case was Asymptomatic at Time of Specimen Collection Resulting in First Laboratory Confirmation, Did the Case Develop Any Symptoms or Signs at Any Time Prior to Discharge or Death?",
+                        "response": this.state.formFields.outcomeDevelop,
                         "followup_response": [
                             {
-                                "id": "Q_37128", 
-                                "question": "Specify Date of Onset of Symptoms / Signs of Illness (DD / MM / YYYY)", 
+                                "id": "Q_37128",
+                                "question": "Specify Date of Onset of Symptoms / Signs of Illness (DD / MM / YYYY)",
                                 response: this.state.formFields.outcomeDevelopYesDate
                             }
                         ]
-                    }, 
+                    },
                     {
-                        "id": "Q_36957", 
-                        "question": "Admission to Hospital (may have been previously reported)", 
-                        "response": this.state.formFields.outcomeAdmission, 
+                        "id": "Q_36957",
+                        "question": "Admission to Hospital (may have been previously reported)",
+                        "response": this.state.formFields.outcomeAdmission,
                         "followup_response": [
                             {
-                                "id": "Q_37403", 
-                                "question": "Specify Date of First Admission (DD / MM / YYYY)", 
+                                "id": "Q_37403",
+                                "question": "Specify Date of First Admission (DD / MM / YYYY)",
                                 "response": this.state.formFields.outcomeDateAdmission
-                            }, 
+                            },
                             {
-                                "id": "Q_37229", 
-                                "question": "Did the Case Receive Care in an Intensive Care Unit (ICU)?", 
+                                "id": "Q_37229",
+                                "question": "Did the Case Receive Care in an Intensive Care Unit (ICU)?",
                                 "response": this.state.formFields.outcomeAdmissionICU
-                            }, 
+                            },
                             {
-                                "id": "Q_37372", 
-                                "question": "Did the Case Receive Ventilation?", 
+                                "id": "Q_37372",
+                                "question": "Did the Case Receive Ventilation?",
                                 "response": this.state.formFields.outcomeAdmissionVentilation
-                            }, 
+                            },
                             {
-                                "id": "Q_37389", 
-                                "question": "Did the Case Receive Extracorporeal Membrane Oxygenation?", 
+                                "id": "Q_37389",
+                                "question": "Did the Case Receive Extracorporeal Membrane Oxygenation?",
                                 "response": this.state.formFields.outcomeAdmissionOxygenation
                             }
                         ]
                     },
                     {
-                        "id": "Q_37025", 
-                        "question": "Health Outcome", 
+                        "id": "Q_37025",
+                        "question": "Health Outcome",
                         "response": outcomeHealthText
-                    }, 
+                    },
                     {
-                        "id": "Q_37412", 
-                        "question": "Date of Release or Death (DD / MM / YYYY)", 
+                        "id": "Q_37412",
+                        "question": "Date of Release or Death (DD / MM / YYYY)",
                         "response": this.state.formFields.outcomeDateRelease
                     },
                     {
-                        "id": "Q_37420", 
-                        "question": "Specify Date of Last Laboratory Test (DD / MM / YYYY)", 
+                        "id": "Q_37420",
+                        "question": "Specify Date of Last Laboratory Test (DD / MM / YYYY)",
                         "response": this.state.formFields.outcomeDateTest
-                    }, 
+                    },
                     {
-                        "id": "Q_39438", 
-                        "question": "Results of Last Test", 
+                        "id": "Q_39438",
+                        "question": "Results of Last Test",
                         "response": this.state.formFields.outcomeTestResult
-                    }, 
+                    },
                     {
-                        "id": "Q_39564", 
-                        "question": "Total Number of Contacts Followed for this Case", 
+                        "id": "Q_39564",
+                        "question": "Total Number of Contacts Followed for this Case",
                         "response": this.state.formFields.outcomeTotalContacts
                     }
                 ]
@@ -538,7 +510,7 @@ class ReportForm extends Component {
                 formErrors.reportingCountry = Validate.section0(formFields).reportingCountry;
 
             } else if ( id.includes('whyTested') ) {
-    
+
                 if (id !== 'whyTestedWriteIn') {
                     // Add/remove checked fields to whyTested array
                     if (e.target.checked) {
@@ -572,13 +544,13 @@ class ReportForm extends Component {
                 const AgeResult = Validate.section1(formFields);
                 formErrors.patientAgeYears = AgeResult.patientAgeYears;
                 formErrors.patientAge = AgeResult.patientAge;
-                
+
             } else if (id === 'patientAgeMonths') {
                 formFields.patientAgeMonths = value && value !=="0" ? parseInt(value) : 0;
                 const AgeResult = Validate.section1(formFields);
                 formErrors.patientAgeMonths = AgeResult.patientAgeMonths;
                 formErrors.patientAge = AgeResult.patientAge;
-    
+
             } else if (id === 'patientAgeDays') {
                 formFields.patientAgeDays = value && value !=="0" ? parseInt(value) : 0;
                 const AgeResult = Validate.section1(formFields);
@@ -614,7 +586,7 @@ class ReportForm extends Component {
 
             } else if (id === 'clinicalSymptomsNo' || id === 'clinicalSymptomsYes' || id === 'clinicalSymptomsUnknown') {
                 formFields.clinicalSymptoms = id.toLowerCase().replace('clinicalsymptoms','');
-    
+
                 if (formFields.clinicalSymptoms !== 'yes') {
                     formErrors.clinicalSymptomsDate = '';
                     formFields.clinicalSymptomsDate = '';
@@ -628,12 +600,12 @@ class ReportForm extends Component {
             } else if (id.includes('clinicalUnderlyingConditions')) {
                 // Get value of sympton type
                 let conditionValue = id.replace('clinicalUnderlyingConditions','');
-    
+
                 // Get if any underlying conditions (radio button)
                 if (conditionValue === 'No' || conditionValue === 'Yes' || conditionValue === 'Unknown') {
                     formFields.clinicalUnderlyingConditions = conditionValue.toLowerCase();
                 }
-                
+
                 // Checklist values
                 else {
                     if (id !== 'clinicalUnderlyingConditionsWriteIn') {
@@ -645,8 +617,8 @@ class ReportForm extends Component {
                             } else {
                                 formFields.clinicalUnderlyingConditionsCheckAll.push(e.target.nextSibling.innerText);
                             }
-                            
-                        } 
+
+                        }
                         // Trimester updates
                         else if (e.target.className === 'pregnancy-trimester form-control') {
 
@@ -662,7 +634,7 @@ class ReportForm extends Component {
                             } else {
                                 formFields.clinicalUnderlyingConditionsCheckAll = formFields.clinicalUnderlyingConditionsCheckAll.filter(el => el !== e.target.nextSibling.innerText);
                             }
-                            
+
                         }
                     } else {
                         formFields.clinicalUnderlyingConditionsWriteIn = value;
@@ -677,20 +649,20 @@ class ReportForm extends Component {
             } else if (id.includes('clinicalAdmission')) {
                 // Get value of admission type
                 let admissionValue = id.replace('clinicalAdmission','');
-    
+
                 // Get if admitted to hospital (radio button)
                 if (admissionValue === 'No' || admissionValue === 'Yes' || admissionValue === 'Unknown') {
                     formFields.clinicalAdmission = admissionValue.toLowerCase();
                 }
-                
+
                 // Hospital Admission Information
                 if (formFields.clinicalAdmission === 'yes') {
-    
+
                     if (admissionValue === 'Date') {
                         let date = ValidationFunctions.convertDate(value);
                         formFields.clinicalSymptomsDate = date;
                         formErrors.clinicalAdmissionDate = Validate.section2(formFields).clinicalAdmissionDate;
-                        
+
                     } else if (admissionValue.includes('ICU')) {
                         formFields.clinicalAdmissionICU = admissionValue.replace('ICU', '').toLowerCase();
 
@@ -701,11 +673,11 @@ class ReportForm extends Component {
                         formFields.clinicalAdmissionOxygenation = admissionValue.replace('Oxygenation', '').toLowerCase();
 
                     }
-    
+
                 }
-    
+
                 // Not part of clinical admission followup reponse
-                if (admissionValue === 'IsolationNo' || admissionValue === 'IsolationYes' || admissionValue === 'IsolationUnknown') {    
+                if (admissionValue === 'IsolationNo' || admissionValue === 'IsolationYes' || admissionValue === 'IsolationUnknown') {
                     formFields.clinicalAdmissionIsolation = admissionValue.replace('Isolation', '').toLowerCase();
 
                 } else if (admissionValue === 'IsolationDate') {
@@ -727,83 +699,83 @@ class ReportForm extends Component {
 
             if (id === 'exposureWorkerNo' || id === 'exposureWorkerYes' || id === 'exposureWorkerUnknown') {
                 formFields.exposureWorker = id.toLowerCase().replace('exposureworker','');
-    
+
             } else if (id === 'exposureWorkerCountry') {
                 formFields.exposureWorkerCountry = value;
                 formErrors.exposureWorkerCountry = Validate.section3(formFields).exposureWorkerCountry;
             } else if (id === 'exposureWorkerCity') {
                 formFields.exposureWorkerCity = value;
                 formErrors.exposureWorkerCity = Validate.section3(formFields).exposureWorkerCity;
-    
+
             } else if (id === 'exposureWorkerFacility') {
                 formFields.exposureWorkerFacility = value;
                 formErrors.exposureWorkerFacility = Validate.section3(formFields).exposureWorkerFacility;
-    
-    
+
+
             } else if (id === 'exposureTravelNo' || id === 'exposureTravelYes' || id === 'exposureTravelUnknown') {
                 formFields.exposureTravel = id.replace('exposureTravel','').toLowerCase();
                 formErrors.exposureTravel = Validate.section3(formFields).exposureTravel;
-                
+
             } else if (id.includes('exposureTravelCountry')) {
                 let index = parseInt( id.replace('exposureTravelCountry','') ) - 1;
                 formFields.exposureTravelCountry[index] = value;
                 formErrors.exposureTravelCountry[index] = Validate.section3(formFields).exposureTravelCountry[index];
-    
+
             } else if (id.includes('exposureTravelCity')) {
                 let index = parseInt( id.replace('exposureTravelCity','') ) - 1;
                 formFields.exposureTravelCity[index] = value;
                 formErrors.exposureTravelCity[index] = Validate.section3(formFields).exposureTravelCity[index];
-    
+
             } else if (id.includes('exposureTravelDeparture')) {
                 let index = parseInt( id.replace('exposureTravelDeparture','') ) - 1;
                 let date = ValidationFunctions.convertDate(value);
-    
+
                 formFields.exposureTravelDeparture[index] = date;
                 formErrors.exposureTravelDeparture[index] = Validate.section3(formFields).exposureTravelDeparture[index];
-    
-            } else if (id === 'exposureVisitedFacilityNo' || id === 'exposureVisitedFacilityYes' || 
+
+            } else if (id === 'exposureVisitedFacilityNo' || id === 'exposureVisitedFacilityYes' ||
                 id === 'exposureVisitedFacilityUnknown') {
-    
+
                     formFields.exposureVisitedFacility = id.replace('exposureVisitedFacility','').toLowerCase();
-    
+
             } else if (id === 'exposureContactNo' || id === 'exposureContactYes' || id === 'exposureContactUnknown') {
                 formFields.exposureContact = id.replace('exposureContact','').toLowerCase();
-    
+
             } else if (id === 'exposureContactSetting') {
                 formFields.exposureContactSetting = value;
                 formErrors.exposureContactSetting = Validate.section3(formFields).exposureContactSetting;
-    
+
             } else if (id.includes('exposureContactId')) {
                 let index = parseInt( id.replace('exposureContactId','') ) - 1;
                 formFields.exposureContactId[index] = value;
                 formErrors.exposureContactId[index] = Validate.section3(formFields).exposureContactId[index];
-    
+
             } else if (id.includes('exposureContactFirstDate')) {
                 let index = parseInt( id.replace('exposureContactFirstDate','') ) - 1;
                 let date = ValidationFunctions.convertDate(value);
                 formFields.exposureContactFirstDate[index] = date;
                 formErrors.exposureContactFirstDate[index] = Validate.section3(formFields).exposureContactFirstDate[index];
-    
+
             } else if (id.includes('exposureContactLastDate')) {
                 let index = parseInt( id.replace('exposureContactLastDate','') ) - 1;
                 let date = ValidationFunctions.convertDate(value);
                 formFields.exposureContactLastDate[index] = date;
                 formErrors.exposureContactLastDate[index] = Validate.section3(formFields).exposureContactLastDate[index];
-    
+
             } else if (id === 'exposureContactCountry') {
                 formFields.exposureContactCountry = value;
                 formErrors.exposureContactCountry = Validate.section3(formFields).exposureContactCountry;
             }
 
             this.setState({formErrors, formFields}, () => console.log(this.state));
-        
+
         },
         section4: e => {
             // Section4 : Outcome : complete and re-sent the full form as...
             const {id, value} = e.target;
             let formErrors = this.state.formErrors;
             let formFields = this.state.formFields;
-        
+
             if (id === 'outcomeDateResubmission') {
                 let date = ValidationFunctions.convertDate(value);
                 formFields.outcomeDateResubmission = date;
@@ -824,15 +796,15 @@ class ReportForm extends Component {
                 let date = ValidationFunctions.convertDate(value);
                 formFields.outcomeDateAdmission = date;
                 formErrors.outcomeDateAdmission = Validate.section4(formFields).outcomeDateAdmission;
-                
+
             } else if (id === 'outcomeAdmissionICUNo' || id === 'outcomeAdmissionICUYes' || id === 'outcomeAdmissionICUUnknown') {
                 formFields.outcomeAdmissionICU = id.replace('outcomeAdmissionICU','').toLowerCase();
 
-            } else if (id === 'outcomeAdmissionVentilationNo' || id === 'outcomeAdmissionVentilationYes' || 
+            } else if (id === 'outcomeAdmissionVentilationNo' || id === 'outcomeAdmissionVentilationYes' ||
                 id === 'outcomeAdmissionVentilationUnknown') {
                     formFields.outcomeAdmissionVentilation = id.replace('outcomeAdmissionVentilation','').toLowerCase();
 
-            } else if (id === 'outcomeAdmissionOxygenationNo' || id === 'outcomeAdmissionOxygenationYes' || 
+            } else if (id === 'outcomeAdmissionOxygenationNo' || id === 'outcomeAdmissionOxygenationYes' ||
                 id === 'outcomeAdmissionOxygenationUnknown') {
                     formFields.outcomeAdmissionOxygenation = id.replace('outcomeAdmissionOxygenation','').toLowerCase();
 
@@ -848,7 +820,7 @@ class ReportForm extends Component {
                 let date = ValidationFunctions.convertDate(value);
                 formFields.outcomeDateRelease = date;
                 formErrors.outcomeDateRelease = Validate.section4(formFields).outcomeDateRelease;
-                
+
             } else if (id === 'outcomeDateTest') {
                 let date = ValidationFunctions.convertDate(value);
                 formFields.outcomeDateTest = date;
@@ -860,7 +832,7 @@ class ReportForm extends Component {
             } else if (id === 'outcomeTotalContacts') {
                 formFields.outcomeTotalContacts = value;
                 formErrors.outcomeTotalContacts = Validate.section4(formFields).outcomeTotalContacts;
-                
+
             } else if (id === 'outcomeTotalContactsUnknown') {
                 if (e.target.checked) {
                     formFields.outcomeTotalContacts = 'unknown';
@@ -877,7 +849,7 @@ class ReportForm extends Component {
             this.setState({formErrors, formFields}, () => console.log(this.state));
         }
     }
-    
+
     render() {
         return (
             <form onSubmit={this.handleSubmit}>
