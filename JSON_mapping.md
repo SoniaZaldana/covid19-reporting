@@ -205,11 +205,6 @@ for this question (JSON object for this question is object with "id" value of "Q
                 "response": <string>, 
                 "followup_response": [
                     {
-                        "id": "Q_36917"
-                        "question": "Please List Unique Identifiers of All Probable or Confirmed Cases", 
-                        "response": <string>
-                    }, 
-                    {
                         "id": "Q_37375"
                         "question": "Please Explain Contact Setting", 
                         "response": <string>
@@ -283,33 +278,28 @@ for this question (JSON object for this question is object with "id" value of "Q
             },
             {
                 "id": "Q_37025", 
-                "question": "Health Outcome"", 
+                "question": "Health Outcome", 
                 "response": <string>, 
-                "followup_response": []
             }, 
             {
                 "id": "Q_37412", 
                 "question": "Date of Release or Death (DD / MM / YYYY)", 
                 "response": <string>, 
-                "followup_response": []
             },
             {
                 "id": "Q_37420", 
                 "question": "Specify Date of Last Laboratory Test (DD / MM / YYYY)", 
                 "response": <string>, 
-                "followup_response": []
             }, 
             {
                 "id": "Q_39438", 
                 "question": "Results of Last Test", 
                 "response": <string>, 
-                "followup_response": []
             }, 
             {
                 "id": "Q_39564", 
                 "question": "Total Number of Contacts Followed for this Case", 
                 "response": <string>, 
-                "followup_response": []
             }
         ]
     }

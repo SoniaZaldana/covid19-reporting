@@ -9,6 +9,8 @@ You can find the meeting minutes for all of our meetings in the `meeting_minutes
 
 You can also find a description of our features with subtasks in `A2.md` in the parent directory. 
 
+You can find a final overview of our project and our postmortem in `A3.md` in the parent directory. 
+
 ## Installing the Development Environment
 If you are running Ubuntu, run the following command to install the development environment:
 ```
@@ -34,7 +36,6 @@ Run the following command to test the application:
 ```
 ./scripts/test.sh
 ```
-Note that the tests will fail and this is expected because there are no tests written yet. As discussed with the client, there is no testing component for this milestone.
 Make sure the container from the build above is still running when you run this script.
 
 ## Best Practices for Development
